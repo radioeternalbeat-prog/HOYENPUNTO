@@ -11,41 +11,56 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #3b82f6;
-            --primary-50: #eff6ff;
-            --primary-100: #dbeafe;
-            --secondary: #0f172a;
+            /* McLaren Papaya */
+            --primary: #ff8000;
+            --primary-dark: #e67300;
+            --primary-light: #ff9933;
+            --primary-50: rgba(255, 128, 0, 0.08);
+            --primary-glow: 0 0 20px rgba(255, 128, 0, 0.4);
+
+            /* Accent - Volt */
+            --accent: #e1ff00;
+            --accent-glow: 0 0 15px rgba(225, 255, 0, 0.35);
+
+            /* Forest Dark */
+            --forest-950: #05140b;
+            --forest-900: #0a2616;
+            --forest-800: #123e24;
+
+            /* Surfaces */
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-hover: rgba(255, 255, 255, 0.06);
+            --surface-border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.025);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+            /* Text */
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.75);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --text-dim: rgba(255, 255, 255, 0.25);
+
+            /* Status */
             --success: #10b981;
-            --success-50: #ecfdf5;
-            --warning: #f59e0b;
+            --success-50: rgba(16, 185, 129, 0.1);
             --danger: #ef4444;
-            --white: #ffffff;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1e293b;
-            --gray-900: #0f172a;
+
+            /* Layout */
             --radius: 10px;
             --radius-lg: 14px;
             --radius-xl: 20px;
-            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-800);
+            background: var(--forest-950);
+            background-image:
+                radial-gradient(ellipse at 80% 20%, rgba(255, 128, 0, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 20% 80%, rgba(225, 255, 0, 0.03) 0%, transparent 50%);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -60,7 +75,7 @@
         /* Left Panel - Branding */
         .register-brand {
             width: 420px;
-            background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+            background: linear-gradient(160deg, var(--forest-900) 0%, var(--forest-950) 100%);
             padding: 48px;
             display: flex;
             flex-direction: column;
@@ -70,6 +85,32 @@
             top: 0;
             left: 0;
             bottom: 0;
+            border-right: 1px solid var(--surface-border);
+            overflow: hidden;
+        }
+
+        .register-brand::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 128, 0, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .register-brand::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(225, 255, 0, 0.06) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         .brand-logo {
@@ -80,15 +121,26 @@
             font-size: 1.3rem;
             text-decoration: none;
             color: white;
+            position: relative;
+            z-index: 1;
         }
 
         .brand-logo span:first-child { font-size: 1.5rem; }
+
+        .brand-logo-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
         .brand-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            position: relative;
+            z-index: 1;
         }
 
         .brand-content h2 {
@@ -96,11 +148,15 @@
             font-weight: 800;
             line-height: 1.2;
             margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .brand-content p {
             font-size: 1rem;
-            opacity: 0.85;
+            color: var(--text-muted);
             line-height: 1.6;
             margin-bottom: 32px;
         }
@@ -115,7 +171,7 @@
             gap: 12px;
             padding: 10px 0;
             font-size: 0.95rem;
-            opacity: 0.9;
+            color: var(--text-secondary);
         }
 
         .brand-features li::before {
@@ -126,7 +182,8 @@
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 128, 0, 0.15);
+            color: var(--primary);
             font-size: 0.7rem;
             font-weight: 700;
             flex-shrink: 0;
@@ -134,7 +191,14 @@
 
         .brand-footer {
             font-size: 0.8rem;
-            opacity: 0.6;
+            color: var(--text-dim);
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-footer a {
+            color: var(--primary);
+            text-decoration: none;
         }
 
         /* Right Panel - Form */
@@ -172,46 +236,51 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            border: 2px solid var(--gray-200);
+            border: 2px solid var(--surface-border);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.8rem;
             font-weight: 700;
-            color: var(--gray-400);
+            color: var(--text-dim);
             transition: all 0.3s ease;
         }
 
         .progress-circle.active {
             border-color: var(--primary);
             background: var(--primary);
-            color: white;
+            color: var(--forest-950);
+            box-shadow: var(--primary-glow);
         }
 
         .progress-circle.completed {
             border-color: var(--success);
             background: var(--success);
             color: white;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
         }
 
         .progress-line {
             width: 40px;
             height: 2px;
-            background: var(--gray-200);
+            background: var(--surface-border);
             transition: background 0.3s ease;
         }
 
         .progress-line.completed {
             background: var(--success);
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.3);
         }
 
         /* ===== FORM CARD ===== */
         .form-card {
-            background: var(--white);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: var(--radius-xl);
             padding: 36px;
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--gray-100);
+            box-shadow: var(--glass-shadow);
+            border: 1px solid var(--glass-border);
         }
 
         .form-card-header {
@@ -230,13 +299,13 @@
         .form-card-title {
             font-size: 1.4rem;
             font-weight: 800;
-            color: var(--secondary);
+            color: var(--text-primary);
             margin-bottom: 6px;
         }
 
         .form-card-subtitle {
             font-size: 0.9rem;
-            color: var(--gray-500);
+            color: var(--text-muted);
         }
 
         /* ===== FORM ELEMENTS ===== */
@@ -248,42 +317,48 @@
             display: block;
             font-size: 0.85rem;
             font-weight: 600;
-            color: var(--gray-700);
+            color: var(--text-secondary);
             margin-bottom: 6px;
         }
 
         .form-label .optional {
             font-weight: 400;
-            color: var(--gray-400);
+            color: var(--text-dim);
         }
 
         .form-input {
             width: 100%;
             padding: 12px 16px;
-            border: 2px solid var(--gray-200);
+            border: 1px solid var(--surface-border);
             border-radius: var(--radius);
             font-size: 0.9rem;
             font-family: inherit;
             transition: all 0.2s ease;
             outline: none;
-            background: var(--white);
+            background: var(--surface);
+            color: var(--text-primary);
         }
 
         .form-input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 128, 0, 0.15);
         }
 
         .form-input::placeholder {
-            color: var(--gray-300);
+            color: var(--text-dim);
         }
 
         .form-select {
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ff8000' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 16px center;
             padding-right: 40px;
+        }
+
+        .form-select option {
+            background: var(--forest-900);
+            color: var(--text-primary);
         }
 
         .form-row {
@@ -294,7 +369,7 @@
 
         .form-helper {
             font-size: 0.75rem;
-            color: var(--gray-400);
+            color: var(--text-dim);
             margin-top: 4px;
         }
 
@@ -310,15 +385,15 @@
             align-items: center;
             gap: 12px;
             padding: 10px 14px;
-            background: var(--gray-50);
+            background: var(--surface);
             border-radius: var(--radius);
-            border: 1px solid var(--gray-100);
+            border: 1px solid var(--surface-border);
         }
 
         .schedule-day {
             font-size: 0.85rem;
             font-weight: 600;
-            color: var(--gray-700);
+            color: var(--text-secondary);
             min-width: 80px;
         }
 
@@ -326,7 +401,7 @@
             position: relative;
             width: 40px;
             height: 22px;
-            background: var(--gray-200);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 100px;
             cursor: pointer;
             transition: background 0.2s ease;
@@ -334,6 +409,7 @@
 
         .schedule-toggle.active {
             background: var(--primary);
+            box-shadow: 0 0 10px rgba(255, 128, 0, 0.3);
         }
 
         .schedule-toggle::after {
@@ -346,7 +422,7 @@
             border-radius: 50%;
             background: white;
             transition: transform 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .schedule-toggle.active::after {
@@ -362,17 +438,24 @@
 
         .schedule-time-input {
             padding: 6px 10px;
-            border: 1px solid var(--gray-200);
+            border: 1px solid var(--surface-border);
             border-radius: 6px;
             font-size: 0.8rem;
             font-family: inherit;
             width: 80px;
             text-align: center;
+            background: var(--surface);
+            color: var(--text-primary);
+        }
+
+        .schedule-time-input:focus {
+            border-color: var(--primary);
+            outline: none;
         }
 
         .schedule-separator {
             font-size: 0.8rem;
-            color: var(--gray-400);
+            color: var(--text-dim);
         }
 
         /* Services list in step 3 */
@@ -389,7 +472,7 @@
             gap: 12px;
             padding: 12px 16px;
             background: var(--success-50);
-            border: 1px solid #a7f3d0;
+            border: 1px solid rgba(16, 185, 129, 0.2);
             border-radius: var(--radius);
         }
 
@@ -404,12 +487,12 @@
         .service-added-name {
             font-size: 0.85rem;
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--text-primary);
         }
 
         .service-added-meta {
             font-size: 0.75rem;
-            color: var(--gray-500);
+            color: var(--text-muted);
         }
 
         .service-added-remove {
@@ -417,13 +500,18 @@
             height: 24px;
             border-radius: 50%;
             border: none;
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.15);
             color: var(--danger);
             cursor: pointer;
             font-size: 0.8rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.15s ease;
+        }
+
+        .service-added-remove:hover {
+            background: rgba(239, 68, 68, 0.3);
         }
 
         .add-service-btn {
@@ -433,10 +521,10 @@
             gap: 8px;
             width: 100%;
             padding: 14px;
-            border: 2px dashed var(--gray-200);
+            border: 1px dashed rgba(255, 128, 0, 0.3);
             border-radius: var(--radius);
             background: transparent;
-            color: var(--gray-500);
+            color: var(--primary-light);
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
@@ -446,39 +534,48 @@
 
         .add-service-btn:hover {
             border-color: var(--primary);
-            color: var(--primary);
-            background: var(--primary-50);
+            background: rgba(255, 128, 0, 0.05);
+            box-shadow: 0 0 15px rgba(255, 128, 0, 0.1);
+        }
+
+        /* Add service form */
+        .add-service-form {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--surface-border);
         }
 
         /* White-label preview */
         .preview-container {
-            background: var(--gray-50);
+            background: var(--surface);
             border-radius: var(--radius-lg);
             padding: 20px;
-            border: 1px solid var(--gray-200);
+            border: 1px solid var(--surface-border);
             margin-top: 16px;
         }
 
         .preview-label {
             font-size: 0.75rem;
             font-weight: 600;
-            color: var(--gray-400);
+            color: var(--text-dim);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 12px;
         }
 
         .preview-mock {
-            background: var(--white);
+            background: var(--forest-900);
             border-radius: var(--radius);
             overflow: hidden;
-            box-shadow: var(--shadow);
+            border: 1px solid var(--surface-border);
         }
 
         .preview-mock-header {
             padding: 16px;
             text-align: center;
-            color: white;
+            color: var(--forest-950);
             background: var(--primary);
             transition: background 0.3s ease;
         }
@@ -487,7 +584,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: white;
+            background: var(--forest-950);
             margin: 0 auto 8px;
             display: flex;
             align-items: center;
@@ -510,9 +607,9 @@
             padding: 10px;
             border-radius: 8px;
             border: none;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.8rem;
-            color: white;
+            color: var(--forest-950);
             text-align: center;
             transition: background 0.3s ease;
         }
@@ -528,9 +625,10 @@
             width: 48px;
             height: 48px;
             border-radius: 12px;
-            border: 2px solid var(--gray-200);
+            border: 2px solid var(--surface-border);
             cursor: pointer;
             padding: 2px;
+            background: var(--surface);
         }
 
         .color-presets {
@@ -553,31 +651,32 @@
         }
 
         .color-preset.selected {
-            border-color: var(--gray-800);
-            box-shadow: 0 0 0 2px white, 0 0 0 4px var(--gray-800);
+            border-color: var(--text-primary);
+            box-shadow: 0 0 0 2px var(--forest-950), 0 0 0 4px var(--text-primary), 0 0 15px rgba(255, 128, 0, 0.3);
         }
 
         /* URL slug */
         .slug-input-wrapper {
             display: flex;
             align-items: center;
-            border: 2px solid var(--gray-200);
+            border: 1px solid var(--surface-border);
             border-radius: var(--radius);
             overflow: hidden;
             transition: all 0.2s ease;
+            background: var(--surface);
         }
 
         .slug-input-wrapper:focus-within {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 128, 0, 0.15);
         }
 
         .slug-prefix {
             padding: 12px 14px;
-            background: var(--gray-50);
+            background: rgba(255, 255, 255, 0.03);
             font-size: 0.85rem;
-            color: var(--gray-400);
-            border-right: 1px solid var(--gray-200);
+            color: var(--text-dim);
+            border-right: 1px solid var(--surface-border);
             white-space: nowrap;
         }
 
@@ -589,7 +688,12 @@
             font-size: 0.9rem;
             font-family: inherit;
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--primary-light);
+            background: transparent;
+        }
+
+        .slug-input::placeholder {
+            color: var(--text-dim);
         }
 
         /* ===== BUTTONS ===== */
@@ -599,10 +703,10 @@
             justify-content: center;
             padding: 14px 24px;
             border-radius: var(--radius);
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.9rem;
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
             cursor: pointer;
             border: none;
             font-family: inherit;
@@ -610,22 +714,25 @@
 
         .btn-primary {
             background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+            color: var(--forest-950);
+            box-shadow: var(--primary-glow);
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
+            background: var(--primary-light);
             transform: translateY(-1px);
+            box-shadow: 0 0 30px rgba(255, 128, 0, 0.5);
         }
 
         .btn-secondary {
-            background: var(--gray-100);
-            color: var(--gray-700);
+            background: var(--surface);
+            color: var(--text-secondary);
+            border: 1px solid var(--surface-border);
         }
 
         .btn-secondary:hover {
-            background: var(--gray-200);
+            background: var(--surface-hover);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
         .btn-group {
@@ -659,6 +766,7 @@
             margin: 0 auto 20px;
             font-size: 2.5rem;
             animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
         }
 
         @keyframes bounceIn {
@@ -670,28 +778,63 @@
         .success-screen h2 {
             font-size: 1.5rem;
             font-weight: 800;
-            color: var(--secondary);
+            color: var(--text-primary);
             margin-bottom: 8px;
         }
 
         .success-screen p {
-            color: var(--gray-500);
+            color: var(--text-muted);
             margin-bottom: 24px;
             font-size: 0.95rem;
         }
 
+        .success-link-box {
+            background: rgba(255, 128, 0, 0.08);
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 128, 0, 0.2);
+        }
+
+        .success-link-box span {
+            font-size: 0.85rem;
+            color: var(--primary-light);
+            font-weight: 600;
+        }
+
+        .success-link-box button {
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: none;
+            background: var(--primary);
+            color: var(--forest-950);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .success-link-box button:hover {
+            background: var(--primary-light);
+        }
+
         .success-checklist {
             text-align: left;
-            background: var(--gray-50);
+            background: var(--surface);
             border-radius: var(--radius-lg);
             padding: 20px;
             margin-bottom: 24px;
+            border: 1px solid var(--surface-border);
         }
 
         .success-checklist h4 {
             font-size: 0.85rem;
             font-weight: 700;
-            color: var(--gray-700);
+            color: var(--text-secondary);
             margin-bottom: 12px;
         }
 
@@ -701,7 +844,7 @@
             gap: 10px;
             padding: 8px 0;
             font-size: 0.85rem;
-            color: var(--gray-600);
+            color: var(--text-secondary);
         }
 
         .success-checklist-item .check {
@@ -715,13 +858,35 @@
             justify-content: center;
             font-size: 0.65rem;
             font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
         }
 
         .success-checklist-item .pending {
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            border: 2px solid var(--gray-200);
+            border: 2px solid var(--surface-border);
+            flex-shrink: 0;
+        }
+
+        /* Login link */
+        .login-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .login-link a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+            color: var(--primary-light);
         }
 
         /* ===== HIDDEN ===== */
@@ -771,7 +936,7 @@
         <aside class="register-brand">
             <a href="/" class="brand-logo">
                 <span>🕐</span>
-                <span>HoyEnPunto</span>
+                <span class="brand-logo-text">HoyEnPunto</span>
             </a>
 
             <div class="brand-content">
@@ -787,7 +952,7 @@
             </div>
 
             <div class="brand-footer">
-                © 2026 HoyEnPunto — Puntualidad absoluta.
+                © 2026 HoyEnPunto — Powered by <a href="https://wa.me/56939010237" target="_blank">Eternal Beat Medios CL</a> 🏎️
             </div>
         </aside>
 
@@ -814,7 +979,7 @@
                     </div>
                 </div>
 
-                <!-- STEP 0: REGISTRO (email + password) -->
+                <!-- STEP 0: REGISTRO -->
                 <div id="step-0" class="form-card fade-in">
                     <div class="form-card-header">
                         <div class="form-card-step">Crear Cuenta</div>
@@ -837,11 +1002,11 @@
                     </div>
 
                     <div class="btn-group">
-                        <button class="btn btn-primary" onclick="goToStep(1)">Crear Cuenta y Continuar →</button>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="goToStep(1)">Crear Cuenta y Continuar →</button>
                     </div>
 
-                    <p style="text-align: center; margin-top: 16px; font-size: 0.8rem; color: var(--gray-400);">
-                        ¿Ya tienes cuenta? <a href="/dashboard/" style="color: var(--primary); font-weight: 600;">Inicia sesión</a>
+                    <p class="login-link">
+                        ¿Ya tienes cuenta? <a href="/dashboard/">Inicia sesión</a>
                     </p>
                 </div>
 
@@ -939,7 +1104,7 @@
                         </div>
                     </div>
 
-                    <div id="add-service-form" class="hidden" style="background: var(--gray-50); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; border: 1px solid var(--gray-200);">
+                    <div id="add-service-form" class="add-service-form hidden">
                         <div class="form-group" style="margin-bottom: 10px;">
                             <input type="text" class="form-input" id="new-service-name" placeholder="Nombre del servicio">
                         </div>
@@ -978,7 +1143,7 @@
                     <div class="form-group">
                         <label class="form-label">Logotipo <span class="optional">(opcional)</span></label>
                         <div style="display: flex; align-items: center; gap: 16px;">
-                            <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border: 2px dashed var(--gray-300);" id="logo-preview">
+                            <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border: 2px dashed rgba(255, 128, 0, 0.3);" id="logo-preview">
                                 📷
                             </div>
                             <div>
@@ -994,16 +1159,16 @@
                     <div class="form-group">
                         <label class="form-label">Color principal de tu marca</label>
                         <div class="color-picker-row">
-                            <input type="color" class="color-picker-input" id="color-picker" value="#e91e8c" onchange="updateColor(this.value)">
+                            <input type="color" class="color-picker-input" id="color-picker" value="#ff8000" onchange="updateColor(this.value)">
                             <div class="color-presets">
-                                <div class="color-preset selected" style="background: #e91e8c;" onclick="selectColor('#e91e8c', this)"></div>
+                                <div class="color-preset selected" style="background: #ff8000;" onclick="selectColor('#ff8000', this)"></div>
+                                <div class="color-preset" style="background: #e1ff00;" onclick="selectColor('#e1ff00', this)"></div>
                                 <div class="color-preset" style="background: #2563eb;" onclick="selectColor('#2563eb', this)"></div>
                                 <div class="color-preset" style="background: #7c3aed;" onclick="selectColor('#7c3aed', this)"></div>
                                 <div class="color-preset" style="background: #059669;" onclick="selectColor('#059669', this)"></div>
                                 <div class="color-preset" style="background: #dc2626;" onclick="selectColor('#dc2626', this)"></div>
-                                <div class="color-preset" style="background: #ea580c;" onclick="selectColor('#ea580c', this)"></div>
                                 <div class="color-preset" style="background: #0891b2;" onclick="selectColor('#0891b2', this)"></div>
-                                <div class="color-preset" style="background: #4f46e5;" onclick="selectColor('#4f46e5', this)"></div>
+                                <div class="color-preset" style="background: #ea580c;" onclick="selectColor('#ea580c', this)"></div>
                             </div>
                         </div>
                     </div>
@@ -1026,9 +1191,9 @@
                                 <div class="preview-mock-name" id="preview-name">Tu Negocio</div>
                             </div>
                             <div class="preview-mock-body">
-                                <div style="height: 8px; background: var(--gray-100); border-radius: 4px; margin-bottom: 8px; width: 80%;"></div>
-                                <div style="height: 8px; background: var(--gray-100); border-radius: 4px; margin-bottom: 16px; width: 60%;"></div>
-                                <div class="preview-mock-btn" id="preview-btn" style="background: #e91e8c;">Reservar Ahora</div>
+                                <div style="height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; margin-bottom: 8px; width: 80%;"></div>
+                                <div style="height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; margin-bottom: 16px; width: 60%;"></div>
+                                <div class="preview-mock-btn" id="preview-btn" style="background: #ff8000;">Reservar Ahora</div>
                             </div>
                         </div>
                     </div>
@@ -1046,9 +1211,9 @@
                         <h2>¡Tu negocio está listo!</h2>
                         <p>Ya puedes compartir tu enlace y empezar a recibir reservas online.</p>
 
-                        <div style="background: var(--primary-50); border-radius: var(--radius); padding: 14px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                            <span style="font-size: 0.85rem; color: var(--primary); font-weight: 600;">🔗 hoyenpunto.com/<span id="final-slug">mi-negocio</span></span>
-                            <button onclick="copyFinalLink()" style="padding: 4px 12px; border-radius: 6px; border: none; background: var(--primary); color: white; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Copiar</button>
+                        <div class="success-link-box">
+                            <span>🔗 hoyenpunto.com/<span id="final-slug">mi-negocio</span></span>
+                            <button onclick="copyFinalLink()">Copiar</button>
                         </div>
 
                         <div class="success-checklist">
@@ -1079,13 +1244,13 @@
                             </div>
                             <div class="success-checklist-item">
                                 <span class="pending"></span>
-                                <span>Recibir primera reserva</span>
+                                <span>Recibir primera reserva 🏎️</span>
                             </div>
                         </div>
 
                         <div class="btn-group" style="flex-direction: column; gap: 10px;">
-                            <a href="/dashboard/" class="btn btn-primary" style="text-decoration: none;">Ir a mi Panel de Control →</a>
-                            <a href="/reservar/" class="btn btn-secondary" style="text-decoration: none;" target="_blank">Ver mi Portal de Reservas</a>
+                            <a href="/dashboard/" class="btn btn-primary" style="text-decoration: none; width: 100%;">Ir a mi Panel de Control →</a>
+                            <a href="/reservar/" class="btn btn-secondary" style="text-decoration: none; width: 100%;" target="_blank">Ver mi Portal de Reservas</a>
                         </div>
                     </div>
                 </div>
@@ -1097,18 +1262,14 @@
     <script>
         let currentStep = 0;
 
-        // ===== NAVIGATION =====
         function goToStep(step) {
-            // Hide all steps
             for (let i = 0; i <= 5; i++) {
                 document.getElementById(`step-${i}`).classList.add('hidden');
             }
             
-            // Show target step
             document.getElementById(`step-${step}`).classList.remove('hidden');
             document.getElementById(`step-${step}`).classList.add('fade-in');
 
-            // Update progress bar
             for (let i = 1; i <= 4; i++) {
                 const circle = document.getElementById(`prog-${i}`);
                 const line = document.getElementById(`line-${i}`);
@@ -1127,7 +1288,6 @@
                 }
             }
 
-            // Handle step 0 (registration) - hide progress
             if (step === 0) {
                 document.getElementById('progress-bar').style.opacity = '0.3';
             } else if (step === 5) {
@@ -1138,15 +1298,12 @@
             }
 
             currentStep = step;
-
-            // Init schedule on step 2
             if (step === 2) initSchedule();
         }
 
-        // ===== SCHEDULE =====
         function initSchedule() {
             const grid = document.getElementById('schedule-grid');
-            if (grid.children.length > 0) return; // Already initialized
+            if (grid.children.length > 0) return;
 
             const days = [
                 { name: 'Lunes', active: true },
@@ -1174,7 +1331,6 @@
             });
         }
 
-        // ===== SERVICES =====
         function toggleServiceForm() {
             const form = document.getElementById('add-service-form');
             const toggle = document.getElementById('add-service-toggle');
@@ -1205,14 +1361,12 @@
             `;
             container.appendChild(item);
 
-            // Reset form
             document.getElementById('new-service-name').value = '';
             document.getElementById('new-service-duration').value = '';
             document.getElementById('new-service-price').value = '';
             toggleServiceForm();
         }
 
-        // ===== BRANDING =====
         function selectColor(color, element) {
             document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('selected'));
             element.classList.add('selected');
@@ -1240,15 +1394,9 @@
             }
         }
 
-        // ===== COMPLETE ONBOARDING =====
         function completeOnboarding() {
             const slug = document.getElementById('biz-slug').value || 'mi-negocio';
             document.getElementById('final-slug').textContent = slug;
-            
-            // Update preview name
-            const bizName = document.getElementById('reg-business')?.value || 'Tu Negocio';
-            document.getElementById('preview-name').textContent = bizName;
-            
             goToStep(5);
         }
 

@@ -11,36 +11,51 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #3b82f6;
-            --primary-50: #eff6ff;
-            --primary-100: #dbeafe;
-            --secondary: #0f172a;
-            --accent: #f59e0b;
+            /* McLaren Papaya */
+            --primary: #ff8000;
+            --primary-dark: #e67300;
+            --primary-light: #ff9933;
+            --primary-50: rgba(255, 128, 0, 0.08);
+            --primary-glow: 0 0 20px rgba(255, 128, 0, 0.4);
+
+            /* Accent - Volt */
+            --accent: #e1ff00;
+            --accent-dark: #c8e600;
+            --accent-glow: 0 0 15px rgba(225, 255, 0, 0.35);
+
+            /* Forest Dark */
+            --forest-950: #05140b;
+            --forest-900: #0a2616;
+            --forest-800: #123e24;
+            --forest-700: #1a5633;
+
+            /* Surfaces */
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-hover: rgba(255, 255, 255, 0.06);
+            --surface-border: rgba(255, 255, 255, 0.07);
+            --surface-active: rgba(255, 128, 0, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.025);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+            /* Text */
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.75);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --text-dim: rgba(255, 255, 255, 0.25);
+
+            /* Status */
             --success: #10b981;
-            --success-50: #ecfdf5;
+            --success-50: rgba(16, 185, 129, 0.1);
             --warning: #f59e0b;
-            --warning-50: #fffbeb;
+            --warning-50: rgba(245, 158, 11, 0.1);
             --danger: #ef4444;
-            --danger-50: #fef2f2;
-            --white: #ffffff;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1e293b;
-            --gray-900: #0f172a;
+            --danger-50: rgba(239, 68, 68, 0.1);
+
+            /* Layout */
             --radius: 10px;
             --radius-lg: 14px;
-            --radius-xl: 18px;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --radius-xl: 20px;
             --sidebar-width: 260px;
         }
 
@@ -48,8 +63,11 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-800);
+            background: var(--forest-950);
+            background-image:
+                radial-gradient(ellipse at 90% 10%, rgba(255, 128, 0, 0.04) 0%, transparent 40%),
+                radial-gradient(ellipse at 10% 90%, rgba(225, 255, 0, 0.02) 0%, transparent 40%);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
         }
@@ -57,8 +75,8 @@
         /* ===== SIDEBAR ===== */
         .sidebar {
             width: var(--sidebar-width);
-            background: var(--white);
-            border-right: 1px solid var(--gray-100);
+            background: var(--forest-900);
+            border-right: 1px solid var(--surface-border);
             height: 100vh;
             position: fixed;
             top: 0;
@@ -71,7 +89,7 @@
 
         .sidebar-header {
             padding: 20px 24px;
-            border-bottom: 1px solid var(--gray-100);
+            border-bottom: 1px solid var(--surface-border);
         }
 
         .sidebar-logo {
@@ -81,11 +99,18 @@
             text-decoration: none;
             font-weight: 800;
             font-size: 1.2rem;
-            color: var(--secondary);
+            color: var(--text-primary);
         }
 
         .sidebar-logo span:first-child {
             font-size: 1.4rem;
+        }
+
+        .sidebar-logo-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .sidebar-nav {
@@ -103,7 +128,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: var(--gray-400);
+            color: var(--text-dim);
             padding: 0 12px;
             margin-bottom: 8px;
         }
@@ -115,7 +140,7 @@
             padding: 10px 12px;
             border-radius: 8px;
             text-decoration: none;
-            color: var(--gray-600);
+            color: var(--text-muted);
             font-size: 0.9rem;
             font-weight: 500;
             transition: all 0.15s ease;
@@ -124,14 +149,15 @@
         }
 
         .nav-item:hover {
-            background: var(--gray-50);
-            color: var(--gray-900);
+            background: var(--surface-hover);
+            color: var(--text-secondary);
         }
 
         .nav-item.active {
-            background: var(--primary-50);
+            background: var(--surface-active);
             color: var(--primary);
             font-weight: 600;
+            border: 1px solid rgba(255, 128, 0, 0.15);
         }
 
         .nav-item-icon {
@@ -142,17 +168,17 @@
 
         .nav-item-badge {
             margin-left: auto;
-            background: var(--danger);
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 700;
+            background: var(--primary);
+            color: var(--forest-950);
+            font-size: 0.65rem;
+            font-weight: 800;
             padding: 2px 7px;
             border-radius: 100px;
         }
 
         .sidebar-footer {
             padding: 16px 12px;
-            border-top: 1px solid var(--gray-100);
+            border-top: 1px solid var(--surface-border);
         }
 
         .sidebar-user {
@@ -171,7 +197,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--forest-950);
             font-weight: 700;
             font-size: 0.85rem;
         }
@@ -183,12 +209,12 @@
         .sidebar-user-name {
             font-size: 0.85rem;
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--text-primary);
         }
 
         .sidebar-user-plan {
             font-size: 0.7rem;
-            color: var(--gray-400);
+            color: var(--primary-light);
         }
 
         /* ===== MAIN CONTENT ===== */
@@ -204,8 +230,10 @@
             align-items: center;
             justify-content: space-between;
             padding: 16px 32px;
-            background: var(--white);
-            border-bottom: 1px solid var(--gray-100);
+            background: rgba(10, 38, 22, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--surface-border);
             position: sticky;
             top: 0;
             z-index: 50;
@@ -220,12 +248,12 @@
         .topbar-title {
             font-size: 1.3rem;
             font-weight: 800;
-            color: var(--secondary);
+            color: var(--text-primary);
         }
 
         .topbar-subtitle {
             font-size: 0.85rem;
-            color: var(--gray-400);
+            color: var(--text-muted);
         }
 
         .topbar-right {
@@ -237,17 +265,18 @@
         .topbar-btn {
             padding: 8px 12px;
             border-radius: 8px;
-            border: 1px solid var(--gray-200);
-            background: var(--white);
+            border: 1px solid var(--surface-border);
+            background: var(--surface);
             cursor: pointer;
             font-size: 1rem;
             transition: all 0.15s ease;
             position: relative;
+            color: var(--text-secondary);
         }
 
         .topbar-btn:hover {
-            background: var(--gray-50);
-            border-color: var(--gray-300);
+            background: var(--surface-hover);
+            border-color: rgba(255, 128, 0, 0.3);
         }
 
         .topbar-btn .badge {
@@ -257,13 +286,14 @@
             width: 18px;
             height: 18px;
             border-radius: 50%;
-            background: var(--danger);
-            color: white;
-            font-size: 0.65rem;
+            background: var(--primary);
+            color: var(--forest-950);
+            font-size: 0.6rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
+            font-weight: 800;
+            box-shadow: 0 0 8px rgba(255, 128, 0, 0.4);
         }
 
         .btn-new-booking {
@@ -273,17 +303,20 @@
             padding: 10px 18px;
             border-radius: 8px;
             background: var(--primary);
-            color: white;
+            color: var(--forest-950);
             border: none;
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.2s ease;
             font-family: inherit;
+            box-shadow: var(--primary-glow);
         }
 
         .btn-new-booking:hover {
-            background: var(--primary-dark);
+            background: var(--primary-light);
+            box-shadow: 0 0 25px rgba(255, 128, 0, 0.5);
+            transform: translateY(-1px);
         }
 
         .mobile-menu-toggle {
@@ -293,6 +326,7 @@
             background: none;
             font-size: 1.3rem;
             cursor: pointer;
+            color: var(--text-primary);
         }
 
         /* ===== DASHBOARD CONTENT ===== */
@@ -309,10 +343,18 @@
         }
 
         .stat-card {
-            background: var(--white);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: var(--radius-lg);
             padding: 20px;
-            border: 1px solid var(--gray-100);
+            border: 1px solid var(--glass-border);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            border-color: rgba(255, 128, 0, 0.2);
+            box-shadow: 0 0 20px rgba(255, 128, 0, 0.05);
         }
 
         .stat-card-header {
@@ -324,7 +366,7 @@
 
         .stat-card-label {
             font-size: 0.8rem;
-            color: var(--gray-500);
+            color: var(--text-muted);
             font-weight: 500;
         }
 
@@ -338,15 +380,15 @@
             font-size: 1rem;
         }
 
-        .stat-card-icon.blue { background: var(--primary-50); }
-        .stat-card-icon.green { background: var(--success-50); }
-        .stat-card-icon.yellow { background: var(--warning-50); }
-        .stat-card-icon.red { background: var(--danger-50); }
+        .stat-card-icon.orange { background: rgba(255, 128, 0, 0.12); }
+        .stat-card-icon.green { background: rgba(16, 185, 129, 0.12); }
+        .stat-card-icon.volt { background: rgba(225, 255, 0, 0.1); }
+        .stat-card-icon.red { background: rgba(239, 68, 68, 0.12); }
 
         .stat-card-value {
             font-size: 1.8rem;
             font-weight: 800;
-            color: var(--secondary);
+            color: var(--text-primary);
         }
 
         .stat-card-change {
@@ -367,9 +409,11 @@
 
         /* ===== CALENDAR ===== */
         .calendar-card {
-            background: var(--white);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-100);
+            border: 1px solid var(--glass-border);
             overflow: hidden;
         }
 
@@ -378,7 +422,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 16px 20px;
-            border-bottom: 1px solid var(--gray-100);
+            border-bottom: 1px solid var(--surface-border);
         }
 
         .calendar-toolbar-left {
@@ -390,33 +434,37 @@
         .calendar-toolbar h3 {
             font-size: 1rem;
             font-weight: 700;
-            color: var(--secondary);
+            color: var(--text-primary);
         }
 
         .cal-nav-btn {
             width: 30px;
             height: 30px;
             border-radius: 6px;
-            border: 1px solid var(--gray-200);
-            background: var(--white);
+            border: 1px solid var(--surface-border);
+            background: var(--surface);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.8rem;
             transition: all 0.15s ease;
+            color: var(--text-secondary);
         }
 
         .cal-nav-btn:hover {
-            background: var(--gray-50);
+            background: var(--surface-hover);
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         .calendar-views {
             display: flex;
             gap: 4px;
-            background: var(--gray-100);
+            background: rgba(255, 255, 255, 0.03);
             padding: 3px;
             border-radius: 8px;
+            border: 1px solid var(--surface-border);
         }
 
         .cal-view-btn {
@@ -426,17 +474,17 @@
             border-radius: 6px;
             font-size: 0.8rem;
             font-weight: 500;
-            color: var(--gray-500);
+            color: var(--text-muted);
             cursor: pointer;
             transition: all 0.15s ease;
             font-family: inherit;
         }
 
         .cal-view-btn.active {
-            background: var(--white);
-            color: var(--gray-800);
-            font-weight: 600;
-            box-shadow: var(--shadow-sm);
+            background: var(--primary);
+            color: var(--forest-950);
+            font-weight: 700;
+            box-shadow: var(--primary-glow);
         }
 
         /* Day View */
@@ -451,7 +499,7 @@
 
         .time-row {
             display: flex;
-            border-bottom: 1px solid var(--gray-50);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             min-height: 60px;
         }
 
@@ -459,10 +507,10 @@
             width: 60px;
             padding: 8px 12px;
             font-size: 0.75rem;
-            color: var(--gray-400);
+            color: var(--text-dim);
             font-weight: 500;
             text-align: right;
-            border-right: 1px solid var(--gray-100);
+            border-right: 1px solid var(--surface-border);
             flex-shrink: 0;
         }
 
@@ -484,25 +532,24 @@
 
         .booking-block:hover {
             transform: translateX(2px);
-            box-shadow: var(--shadow);
         }
 
         .booking-block.confirmed {
-            background: var(--primary-50);
+            background: rgba(255, 128, 0, 0.08);
             border-color: var(--primary);
-            color: var(--primary-dark);
+            color: var(--primary-light);
         }
 
         .booking-block.pending {
             background: var(--warning-50);
             border-color: var(--warning);
-            color: #92400e;
+            color: #fbbf24;
         }
 
         .booking-block.completed {
             background: var(--success-50);
             border-color: var(--success);
-            color: #065f46;
+            color: #34d399;
         }
 
         .booking-block-name {
@@ -511,7 +558,7 @@
         }
 
         .booking-block-service {
-            opacity: 0.8;
+            opacity: 0.7;
             font-size: 0.75rem;
         }
 
@@ -519,7 +566,7 @@
             position: absolute;
             left: 0;
             right: 0;
-            border-top: 2px solid var(--danger);
+            border-top: 2px solid var(--primary);
             z-index: 10;
         }
 
@@ -531,7 +578,12 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: var(--danger);
+            background: var(--primary);
+            box-shadow: var(--primary-glow);
+        }
+
+        .time-row.lunch-break {
+            background: rgba(255, 255, 255, 0.01);
         }
 
         /* ===== RIGHT PANEL ===== */
@@ -542,9 +594,11 @@
         }
 
         .panel-card {
-            background: var(--white);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-100);
+            border: 1px solid var(--glass-border);
             overflow: hidden;
         }
 
@@ -553,13 +607,13 @@
             align-items: center;
             justify-content: space-between;
             padding: 16px 20px;
-            border-bottom: 1px solid var(--gray-50);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
 
         .panel-card-title {
             font-size: 0.9rem;
             font-weight: 700;
-            color: var(--secondary);
+            color: var(--text-primary);
         }
 
         .panel-card-action {
@@ -572,6 +626,7 @@
 
         .panel-card-action:hover {
             text-decoration: underline;
+            color: var(--primary-light);
         }
 
         /* Upcoming bookings */
@@ -590,7 +645,7 @@
         }
 
         .upcoming-item:hover {
-            background: var(--gray-50);
+            background: var(--surface-hover);
         }
 
         .upcoming-time {
@@ -601,12 +656,12 @@
         .upcoming-time-hour {
             font-size: 0.9rem;
             font-weight: 700;
-            color: var(--secondary);
+            color: var(--text-primary);
         }
 
         .upcoming-time-period {
             font-size: 0.65rem;
-            color: var(--gray-400);
+            color: var(--text-dim);
             text-transform: uppercase;
         }
 
@@ -627,12 +682,12 @@
         .upcoming-client {
             font-size: 0.85rem;
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--text-primary);
         }
 
         .upcoming-service {
             font-size: 0.75rem;
-            color: var(--gray-400);
+            color: var(--text-muted);
         }
 
         .upcoming-status {
@@ -643,18 +698,21 @@
         }
 
         .status-confirmed {
-            background: var(--primary-50);
-            color: var(--primary);
+            background: rgba(255, 128, 0, 0.1);
+            color: var(--primary-light);
+            border: 1px solid rgba(255, 128, 0, 0.2);
         }
 
         .status-pending {
             background: var(--warning-50);
-            color: #92400e;
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.2);
         }
 
         .status-completed {
             background: var(--success-50);
-            color: #065f46;
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         /* Quick actions */
@@ -672,16 +730,18 @@
             gap: 6px;
             padding: 16px 8px;
             border-radius: var(--radius);
-            border: 1px solid var(--gray-100);
-            background: var(--white);
+            border: 1px solid var(--surface-border);
+            background: var(--surface);
             cursor: pointer;
             transition: all 0.15s ease;
             text-decoration: none;
+            color: var(--text-secondary);
         }
 
         .quick-action-btn:hover {
-            background: var(--gray-50);
-            border-color: var(--primary-100);
+            background: var(--surface-hover);
+            border-color: rgba(255, 128, 0, 0.3);
+            color: var(--primary-light);
         }
 
         .quick-action-icon {
@@ -691,7 +751,43 @@
         .quick-action-label {
             font-size: 0.75rem;
             font-weight: 600;
-            color: var(--gray-600);
+        }
+
+        /* Link del negocio */
+        .link-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: var(--surface);
+            border-radius: 8px;
+            border: 1px solid var(--surface-border);
+        }
+
+        .link-box-url {
+            flex: 1;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .link-box-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            background: var(--primary);
+            color: var(--forest-950);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .link-box-btn:hover {
+            background: var(--primary-light);
+            box-shadow: 0 0 10px rgba(255, 128, 0, 0.3);
         }
 
         /* ===== RESPONSIVE ===== */
@@ -749,7 +845,7 @@
         <div class="sidebar-header">
             <a href="/" class="sidebar-logo">
                 <span>🕐</span>
-                <span>HoyEnPunto</span>
+                <span class="sidebar-logo-text">HoyEnPunto</span>
             </a>
         </div>
 
@@ -813,7 +909,7 @@
                 <div class="sidebar-user-avatar">CM</div>
                 <div class="sidebar-user-info">
                     <div class="sidebar-user-name">Carolina Méndez</div>
-                    <div class="sidebar-user-plan">Plan Professional</div>
+                    <div class="sidebar-user-plan">Plan Professional ⚡</div>
                 </div>
             </div>
         </div>
@@ -851,7 +947,7 @@
                 <div class="stat-card">
                     <div class="stat-card-header">
                         <span class="stat-card-label">Citas Hoy</span>
-                        <div class="stat-card-icon blue">📅</div>
+                        <div class="stat-card-icon orange">📅</div>
                     </div>
                     <div class="stat-card-value">8</div>
                     <div class="stat-card-change up">↑ 2 más que ayer</div>
@@ -867,7 +963,7 @@
                 <div class="stat-card">
                     <div class="stat-card-header">
                         <span class="stat-card-label">Nuevos Clientes</span>
-                        <div class="stat-card-icon yellow">👥</div>
+                        <div class="stat-card-icon volt">👥</div>
                     </div>
                     <div class="stat-card-value">5</div>
                     <div class="stat-card-change up">↑ Este mes: 18 nuevos</div>
@@ -952,9 +1048,9 @@
                                 <div class="time-label">12:30</div>
                                 <div class="time-content"></div>
                             </div>
-                            <div class="time-row" style="background: var(--gray-50);">
-                                <div class="time-label" style="color: var(--gray-300);">13:00</div>
-                                <div class="time-content" style="display: flex; align-items: center; font-size: 0.75rem; color: var(--gray-300);">
+                            <div class="time-row lunch-break">
+                                <div class="time-label" style="color: var(--text-dim);">13:00</div>
+                                <div class="time-content" style="display: flex; align-items: center; font-size: 0.75rem; color: var(--text-dim);">
                                     🍽️ Almuerzo
                                 </div>
                             </div>
@@ -1110,16 +1206,12 @@
                             <span class="panel-card-title">Tu Enlace de Reservas</span>
                         </div>
                         <div style="padding: 16px;">
-                            <div style="display: flex; align-items: center; gap: 8px; padding: 12px; background: var(--gray-50); border-radius: 8px; border: 1px solid var(--gray-200);">
-                                <span style="flex: 1; font-size: 0.8rem; color: var(--gray-600); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    hoyenpunto.com/estilo-carolina
-                                </span>
-                                <button onclick="copyLink()" style="padding: 6px 12px; border-radius: 6px; border: none; background: var(--primary); color: white; font-size: 0.75rem; font-weight: 600; cursor: pointer;">
-                                    Copiar
-                                </button>
+                            <div class="link-box">
+                                <span class="link-box-url">hoyenpunto.com/estilo-carolina</span>
+                                <button class="link-box-btn" onclick="copyLink()">Copiar</button>
                             </div>
-                            <p style="font-size: 0.75rem; color: var(--gray-400); margin-top: 8px; text-align: center;">
-                                Comparte este enlace con tus clientes para que reserven online
+                            <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 8px; text-align: center;">
+                                Comparte este enlace con tus clientes para que reserven online 🏎️
                             </p>
                         </div>
                     </div>
@@ -1147,12 +1239,9 @@
 
         // Section navigation (demo)
         function showSection(section) {
-            // Remove active from all nav items
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            // Add active to clicked item
             event.currentTarget.classList.add('active');
             
-            // For demo purposes, show an alert for non-dashboard sections
             if (section !== 'dashboard') {
                 alert(`Sección "${section}" — En desarrollo. En el MVP completo, aquí se mostrará la gestión de ${section}.`);
             }
