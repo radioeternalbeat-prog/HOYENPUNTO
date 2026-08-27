@@ -35,6 +35,7 @@
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
+  force = true
 
 # Redirects para SPA (futuro)
 [[redirects]]
@@ -42,8 +43,8 @@
   to = "/index.html"
   status = 200
 
-# Custom 404
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Custom 404 (NOTA: NO usar catch-all para evitar interceptar functions)
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
