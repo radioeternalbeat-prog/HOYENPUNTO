@@ -13,7 +13,7 @@ const Auth = {
      * @returns {Object} { user, error }
      */
     async signUp(email, password) {
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error } = await sb.auth.signUp({
             email,
             password,
             options: {
@@ -33,7 +33,7 @@ const Auth = {
      * @returns {Object} { user, error }
      */
     async signIn(email, password) {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await sb.auth.signInWithPassword({
             email,
             password
         });
@@ -49,7 +49,7 @@ const Auth = {
      * Login con Google OAuth
      */
     async signInWithGoogle() {
-        const { data, error } = await supabase.auth.signInWithOAuth({
+        const { data, error } = await sb.auth.signInWithOAuth({
             provider: 'google',
             options: {
                 redirectTo: `${window.location.origin}/dashboard/`
@@ -66,7 +66,7 @@ const Auth = {
      * Cerrar sesión
      */
     async signOut() {
-        const { error } = await supabase.auth.signOut();
+        const { error } = await sb.auth.signOut();
         if (!error) {
             window.location.href = '/';
         }
@@ -77,7 +77,7 @@ const Auth = {
      * Obtener el usuario actual (null si no está logueado)
      */
     async getUser() {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await sb.auth.getUser();
         return user;
     },
 
@@ -85,7 +85,7 @@ const Auth = {
      * Obtener la sesión actual
      */
     async getSession() {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await sb.auth.getSession();
         return session;
     },
 
@@ -118,7 +118,7 @@ const Auth = {
      * Escuchar cambios de estado de autenticación
      */
     onAuthStateChange(callback) {
-        supabase.auth.onAuthStateChange((event, session) => {
+        sb.auth.onAuthStateChange((event, session) => {
             log('Auth state change:', event);
             callback(event, session);
         });

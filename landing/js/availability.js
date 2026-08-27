@@ -21,7 +21,7 @@ const Availability = {
      * @returns {Array} [{slot_start: "09:00:00", slot_end: "09:30:00"}, ...]
      */
     async getSlots(businessId, staffId, date, durationMinutes = 30) {
-        const { data, error } = await supabase.rpc('get_available_slots', {
+        const { data, error } = await sb.rpc('get_available_slots', {
             p_business_id: businessId,
             p_staff_id: staffId,
             p_date: date,

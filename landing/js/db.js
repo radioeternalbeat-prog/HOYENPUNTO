@@ -18,7 +18,7 @@ const DB = {
             const user = await Auth.getUser();
             if (!user) return { data: null, error: 'Not authenticated' };
 
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('businesses')
                 .insert({
                     owner_id: user.id,
@@ -37,7 +37,7 @@ const DB = {
 
             if (!error) {
                 // Auto-crear un staff entry para el owner
-                await supabase.from('staff').insert({
+                await sb.from('staff').insert({
                     business_id: data.id,
                     user_id: user.id,
                     display_name: name.split(' ')[0],
@@ -57,7 +57,7 @@ const DB = {
             const user = await Auth.getUser();
             if (!user) return { data: null, error: 'Not authenticated' };
 
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('businesses')
                 .select('*')
                 .eq('owner_id', user.id)
@@ -70,7 +70,7 @@ const DB = {
          * Obtener un negocio por slug (público, para el portal de reservas)
          */
         async getBySlug(slug) {
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('businesses')
                 .select('*')
                 .eq('slug', slug)
@@ -84,7 +84,7 @@ const DB = {
          * Actualizar datos del negocio
          */
         async update(businessId, updates) {
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('businesses')
                 .update(updates)
                 .eq('id', businessId)
@@ -98,7 +98,7 @@ const DB = {
          * Verificar si un slug está disponible
          */
         async isSlugAvailable(slug) {
-            const { data } = await supabase
+            const { data } = await sb
                 .from('businesses')
                 .select('id')
                 .eq('slug', slug)
@@ -114,7 +114,7 @@ const DB = {
          * Obtener servicios de un negocio
          */
         async getByBusiness(businessId, activeOnly = true) {
-            let query = supabase
+            let query = sb
                 .from('services')
                 .select('*')
                 .eq('business_id', businessId)
@@ -130,7 +130,7 @@ const DB = {
          * Crear un servicio
          */
         async create(businessId, { name, description, duration_minutes, price, icon, sort_order }) {
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('services')
                 .insert({
                     business_id: businessId,
@@ -151,7 +151,7 @@ const DB = {
          * Actualizar un servicio
          */
         async update(serviceId, updates) {
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('services')
                 .update(updates)
                 .eq('id', serviceId)
@@ -165,7 +165,7 @@ const DB = {
          * Eliminar (desactivar) un servicio
          */
         async delete(serviceId) {
-            const { error } = await supabase
+            const { error } = await sb
                 .from('services')
                 .update({ is_active: false })
                 .eq('id', serviceId);
@@ -180,7 +180,7 @@ const DB = {
          * Obtener staff de un negocio
          */
         async getByBusiness(businessId, activeOnly = true) {
-            let query = supabase
+            let query = sb
                 .from('staff')
                 .select('*, staff_services(service_id)')
                 .eq('business_id', businessId);
@@ -195,7 +195,7 @@ const DB = {
          * Crear un empleado
          */
         async create(businessId, { display_name, email, phone, bio, role }) {
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('staff')
                 .insert({
                     business_id: businessId,
@@ -216,11 +216,11 @@ const DB = {
          */
         async assignServices(staffId, serviceIds) {
             // Delete existing assignments
-            await supabase.from('staff_services').delete().eq('staff_id', staffId);
+            await sb.from('staff_services').delete().eq('staff_id', staffId);
 
             // Insert new ones
             const rows = serviceIds.map(sid => ({ staff_id: staffId, service_id: sid }));
-            const { error } = await supabase.from('staff_services').insert(rows);
+            const { error } = await sb.from('staff_services').insert(rows);
 
             return { error: error?.message };
         }
@@ -232,7 +232,7 @@ const DB = {
          * Obtener horarios de un negocio
          */
         async getByBusiness(businessId) {
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('schedules')
                 .select('*')
                 .eq('business_id', businessId)
@@ -247,7 +247,7 @@ const DB = {
          */
         async saveAll(businessId, scheduleData) {
             // Delete existing
-            await supabase.from('schedules')
+            await sb.from('schedules')
                 .delete()
                 .eq('business_id', businessId)
                 .is('staff_id', null);
@@ -266,7 +266,7 @@ const DB = {
 
             if (rows.length === 0) return { error: null };
 
-            const { error } = await supabase.from('schedules').insert(rows);
+            const { error } = await sb.from('schedules').insert(rows);
             return { error: error?.message };
         }
     },
@@ -277,7 +277,7 @@ const DB = {
          * Obtener clientes de un negocio
          */
         async getByBusiness(businessId, { limit = 50, offset = 0, search = '' } = {}) {
-            let query = supabase
+            let query = sb
                 .from('customers')
                 .select('*', { count: 'exact' })
                 .eq('business_id', businessId)
@@ -299,7 +299,7 @@ const DB = {
          * Obtener reservas de un negocio (con filtros)
          */
         async getByBusiness(businessId, { date, status, staffId, limit = 50 } = {}) {
-            let query = supabase
+            let query = sb
                 .from('bookings')
                 .select(`
                     *,
@@ -337,7 +337,7 @@ const DB = {
             const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
             // Citas hoy
-            const { count: todayCount } = await supabase
+            const { count: todayCount } = await sb
                 .from('bookings')
                 .select('id', { count: 'exact', head: true })
                 .eq('business_id', businessId)
@@ -346,7 +346,7 @@ const DB = {
                 .neq('status', 'cancelled');
 
             // Reservas esta semana
-            const { count: weekCount } = await supabase
+            const { count: weekCount } = await sb
                 .from('bookings')
                 .select('id', { count: 'exact', head: true })
                 .eq('business_id', businessId)
@@ -355,7 +355,7 @@ const DB = {
 
             // Nuevos clientes este mes
             const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-            const { count: newClientsCount } = await supabase
+            const { count: newClientsCount } = await sb
                 .from('customers')
                 .select('id', { count: 'exact', head: true })
                 .eq('business_id', businessId)
@@ -363,13 +363,13 @@ const DB = {
 
             // Tasa de no-show (últimos 30 días)
             const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-            const { count: totalRecent } = await supabase
+            const { count: totalRecent } = await sb
                 .from('bookings')
                 .select('id', { count: 'exact', head: true })
                 .eq('business_id', businessId)
                 .gte('start_time', thirtyDaysAgo);
 
-            const { count: noShowCount } = await supabase
+            const { count: noShowCount } = await sb
                 .from('bookings')
                 .select('id', { count: 'exact', head: true })
                 .eq('business_id', businessId)
@@ -396,7 +396,7 @@ const DB = {
                 updates.cancellation_reason = reason;
             }
 
-            const { data, error } = await supabase
+            const { data, error } = await sb
                 .from('bookings')
                 .update(updates)
                 .eq('id', bookingId)
@@ -411,7 +411,7 @@ const DB = {
          * Usa la función RPC create_booking del backend
          */
         async create({ businessId, serviceId, staffId, startTime, customerName, customerEmail, customerPhone, notes }) {
-            const { data, error } = await supabase.rpc('create_booking', {
+            const { data, error } = await sb.rpc('create_booking', {
                 p_business_id: businessId,
                 p_service_id: serviceId,
                 p_staff_id: staffId,
