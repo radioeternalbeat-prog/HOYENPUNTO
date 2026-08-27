@@ -53,7 +53,7 @@ const Availability = {
      */
     async getAvailableDays(businessId, year, month) {
         // Get business schedules to know which days of week are active
-        const { data: schedules } = await supabase
+        const { data: schedules } = await sb
             .from('schedules')
             .select('day')
             .eq('business_id', businessId)
@@ -76,7 +76,7 @@ const Availability = {
         const monthStart = `${year}-${String(month + 1).padStart(2, '0')}-01`;
         const monthEnd = `${year}-${String(month + 1).padStart(2, '0')}-${daysInMonth}`;
 
-        const { data: blockedDates } = await supabase
+        const { data: blockedDates } = await sb
             .from('blocked_slots')
             .select('date')
             .eq('business_id', businessId)
@@ -126,7 +126,7 @@ const Availability = {
      */
     async getAvailableStaff(businessId, serviceId, date, time) {
         // Get all staff that provide this service
-        const { data: staffServices } = await supabase
+        const { data: staffServices } = await sb
             .from('staff_services')
             .select('staff_id, staff:staff(id, display_name, bio, avatar_url, is_active)')
             .eq('service_id', serviceId);
