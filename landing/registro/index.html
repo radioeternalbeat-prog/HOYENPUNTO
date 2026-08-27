@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta — HoyEnPunto</title>
+    <meta name="description" content="Crea tu cuenta gratis en HoyEnPunto y empieza a recibir reservas online en minutos.">
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --primary-50: #eff6ff;
+            --primary-100: #dbeafe;
+            --secondary: #0f172a;
+            --success: #10b981;
+            --success-50: #ecfdf5;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --radius: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 20px;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== LAYOUT ===== */
+        .register-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Left Panel - Branding */
+        .register-brand {
+            width: 420px;
+            background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            text-decoration: none;
+            color: white;
+        }
+
+        .brand-logo span:first-child { font-size: 1.5rem; }
+
+        .brand-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand-content h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .brand-content p {
+            font-size: 1rem;
+            opacity: 0.85;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .brand-features {
+            list-style: none;
+        }
+
+        .brand-features li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .brand-features li::before {
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            font-size: 0.7rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .brand-footer {
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+
+        /* Right Panel - Form */
+        .register-form-area {
+            flex: 1;
+            margin-left: 420px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 540px;
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--gray-400);
+            transition: all 0.3s ease;
+        }
+
+        .progress-circle.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .progress-circle.completed {
+            border-color: var(--success);
+            background: var(--success);
+            color: white;
+        }
+
+        .progress-line {
+            width: 40px;
+            height: 2px;
+            background: var(--gray-200);
+            transition: background 0.3s ease;
+        }
+
+        .progress-line.completed {
+            background: var(--success);
+        }
+
+        /* ===== FORM CARD ===== */
+        .form-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 36px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-100);
+        }
+
+        .form-card-header {
+            margin-bottom: 28px;
+        }
+
+        .form-card-step {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .form-card-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-card-subtitle {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+        }
+
+        /* ===== FORM ELEMENTS ===== */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .form-label .optional {
+            font-weight: 400;
+            color: var(--gray-400);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            outline: none;
+            background: var(--white);
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--gray-300);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-helper {
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            margin-top: 4px;
+        }
+
+        /* Schedule Grid */
+        .schedule-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .schedule-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-100);
+        }
+
+        .schedule-day {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            min-width: 80px;
+        }
+
+        .schedule-toggle {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            background: var(--gray-200);
+            border-radius: 100px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .schedule-toggle.active {
+            background: var(--primary);
+        }
+
+        .schedule-toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            transition: transform 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .schedule-toggle.active::after {
+            transform: translateX(18px);
+        }
+
+        .schedule-times {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .schedule-time-input {
+            padding: 6px 10px;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: inherit;
+            width: 80px;
+            text-align: center;
+        }
+
+        .schedule-separator {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+        }
+
+        /* Services list in step 3 */
+        .services-added {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .service-added-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--success-50);
+            border: 1px solid #a7f3d0;
+            border-radius: var(--radius);
+        }
+
+        .service-added-icon {
+            font-size: 1.1rem;
+        }
+
+        .service-added-info {
+            flex: 1;
+        }
+
+        .service-added-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .service-added-meta {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .service-added-remove {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-service-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px;
+            border: 2px dashed var(--gray-200);
+            border-radius: var(--radius);
+            background: transparent;
+            color: var(--gray-500);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .add-service-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-50);
+        }
+
+        /* White-label preview */
+        .preview-container {
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--gray-200);
+            margin-top: 16px;
+        }
+
+        .preview-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+
+        .preview-mock {
+            background: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .preview-mock-header {
+            padding: 16px;
+            text-align: center;
+            color: white;
+            background: var(--primary);
+            transition: background 0.3s ease;
+        }
+
+        .preview-mock-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .preview-mock-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .preview-mock-body {
+            padding: 16px;
+        }
+
+        .preview-mock-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: white;
+            text-align: center;
+            transition: background 0.3s ease;
+        }
+
+        /* Color picker row */
+        .color-picker-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .color-picker-input {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            border: 2px solid var(--gray-200);
+            cursor: pointer;
+            padding: 2px;
+        }
+
+        .color-presets {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .color-preset {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.15s ease;
+        }
+
+        .color-preset:hover {
+            transform: scale(1.15);
+        }
+
+        .color-preset.selected {
+            border-color: var(--gray-800);
+            box-shadow: 0 0 0 2px white, 0 0 0 4px var(--gray-800);
+        }
+
+        /* URL slug */
+        .slug-input-wrapper {
+            display: flex;
+            align-items: center;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .slug-input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .slug-prefix {
+            padding: 12px 14px;
+            background: var(--gray-50);
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            border-right: 1px solid var(--gray-200);
+            white-space: nowrap;
+        }
+
+        .slug-input {
+            flex: 1;
+            padding: 12px 14px;
+            border: none;
+            outline: none;
+            font-size: 0.9rem;
+            font-family: inherit;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 24px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        .btn-back {
+            flex: 0.4 !important;
+        }
+
+        /* ===== SUCCESS SCREEN ===== */
+        .success-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--success-50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes bounceIn {
+            from { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            to { transform: scale(1); }
+        }
+
+        .success-screen h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .success-screen p {
+            color: var(--gray-500);
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+
+        .success-checklist {
+            text-align: left;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .success-checklist h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--gray-700);
+            margin-bottom: 12px;
+        }
+
+        .success-checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .success-checklist-item .check {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--success);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+
+        .success-checklist-item .pending {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--gray-200);
+        }
+
+        /* ===== HIDDEN ===== */
+        .hidden { display: none !important; }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .register-brand {
+                display: none;
+            }
+            .register-form-area {
+                margin-left: 0;
+                padding: 24px 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-card {
+                padding: 24px 20px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .schedule-row {
+                flex-wrap: wrap;
+            }
+            .progress-line {
+                width: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-layout">
+        
+        <!-- LEFT BRAND PANEL -->
+        <aside class="register-brand">
+            <a href="/" class="brand-logo">
+                <span>🕐</span>
+                <span>HoyEnPunto</span>
+            </a>
+
+            <div class="brand-content">
+                <h2>Digitaliza tu agenda en minutos</h2>
+                <p>Configura tu negocio, agrega tus servicios y empieza a recibir reservas online hoy mismo.</p>
+                <ul class="brand-features">
+                    <li>Configuración en menos de 10 minutos</li>
+                    <li>Sin tarjeta de crédito requerida</li>
+                    <li>50 reservas/mes gratis para siempre</li>
+                    <li>Recordatorios automáticos incluidos</li>
+                    <li>Tu portal personalizado con tu marca</li>
+                </ul>
+            </div>
+
+            <div class="brand-footer">
+                © 2026 HoyEnPunto — Puntualidad absoluta.
+            </div>
+        </aside>
+
+        <!-- RIGHT FORM AREA -->
+        <div class="register-form-area">
+            <div class="register-container">
+                
+                <!-- PROGRESS BAR -->
+                <div class="progress-bar" id="progress-bar">
+                    <div class="progress-step">
+                        <div class="progress-circle active" id="prog-1">1</div>
+                    </div>
+                    <div class="progress-line" id="line-1"></div>
+                    <div class="progress-step">
+                        <div class="progress-circle" id="prog-2">2</div>
+                    </div>
+                    <div class="progress-line" id="line-2"></div>
+                    <div class="progress-step">
+                        <div class="progress-circle" id="prog-3">3</div>
+                    </div>
+                    <div class="progress-line" id="line-3"></div>
+                    <div class="progress-step">
+                        <div class="progress-circle" id="prog-4">4</div>
+                    </div>
+                </div>
+
+                <!-- STEP 0: REGISTRO (email + password) -->
+                <div id="step-0" class="form-card fade-in">
+                    <div class="form-card-header">
+                        <div class="form-card-step">Crear Cuenta</div>
+                        <h2 class="form-card-title">Bienvenido a HoyEnPunto</h2>
+                        <p class="form-card-subtitle">Crea tu cuenta para comenzar a configurar tu negocio.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nombre del negocio</label>
+                        <input type="text" class="form-input" id="reg-business" placeholder="Ej: Estilo Carolina">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tu email</label>
+                        <input type="email" class="form-input" id="reg-email" placeholder="carolina@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" class="form-input" id="reg-password" placeholder="Mínimo 8 caracteres">
+                        <p class="form-helper">Usa letras, números y al menos un símbolo</p>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="goToStep(1)">Crear Cuenta y Continuar →</button>
+                    </div>
+
+                    <p style="text-align: center; margin-top: 16px; font-size: 0.8rem; color: var(--gray-400);">
+                        ¿Ya tienes cuenta? <a href="/dashboard/" style="color: var(--primary); font-weight: 600;">Inicia sesión</a>
+                    </p>
+                </div>
+
+                <!-- STEP 1: DATOS DEL NEGOCIO -->
+                <div id="step-1" class="form-card hidden">
+                    <div class="form-card-header">
+                        <div class="form-card-step">Paso 1 de 4</div>
+                        <h2 class="form-card-title">Datos de tu Negocio</h2>
+                        <p class="form-card-subtitle">Cuéntanos sobre tu negocio para personalizar tu experiencia.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Categoría del negocio</label>
+                        <select class="form-input form-select" id="biz-category">
+                            <option value="" disabled selected>Selecciona una categoría</option>
+                            <option value="beauty">💇‍♀️ Salón de Belleza / Peluquería</option>
+                            <option value="barber">💈 Barbería</option>
+                            <option value="spa">💆 Spa & Estética</option>
+                            <option value="dental">🦷 Clínica Dental</option>
+                            <option value="medical">🏥 Consultorio Médico</option>
+                            <option value="psychology">🧠 Psicología / Terapia</option>
+                            <option value="consulting">💼 Consultoría / Coaching</option>
+                            <option value="education">📚 Educación / Tutorías</option>
+                            <option value="fitness">🏋️ Fitness / Entrenamiento</option>
+                            <option value="automotive">🔧 Taller Mecánico</option>
+                            <option value="other">📦 Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Dirección</label>
+                        <input type="text" class="form-input" id="biz-address" placeholder="Av. Providencia 1234, Santiago">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-input" id="biz-phone" placeholder="+56 9 1234 5678">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Zona horaria</label>
+                            <select class="form-input form-select" id="biz-timezone">
+                                <option value="america/santiago" selected>Chile (GMT-4)</option>
+                                <option value="america/bogota">Colombia (GMT-5)</option>
+                                <option value="america/mexico">México (GMT-6)</option>
+                                <option value="america/argentina">Argentina (GMT-3)</option>
+                                <option value="europe/madrid">España (GMT+1)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descripción breve <span class="optional">(opcional)</span></label>
+                        <input type="text" class="form-input" id="biz-description" placeholder="Salón de belleza con 10 años de experiencia..." maxlength="280">
+                        <p class="form-helper">Máximo 280 caracteres. Se mostrará en tu portal de reservas.</p>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-secondary btn-back" onclick="goToStep(0)">← Atrás</button>
+                        <button class="btn btn-primary" onclick="goToStep(2)">Siguiente →</button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: HORARIOS -->
+                <div id="step-2" class="form-card hidden">
+                    <div class="form-card-header">
+                        <div class="form-card-step">Paso 2 de 4</div>
+                        <h2 class="form-card-title">Horarios de Atención</h2>
+                        <p class="form-card-subtitle">Define los días y horas en que tu negocio atiende.</p>
+                    </div>
+
+                    <div class="schedule-grid" id="schedule-grid">
+                        <!-- Generated by JS -->
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-secondary btn-back" onclick="goToStep(1)">← Atrás</button>
+                        <button class="btn btn-primary" onclick="goToStep(3)">Siguiente →</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: SERVICIOS -->
+                <div id="step-3" class="form-card hidden">
+                    <div class="form-card-header">
+                        <div class="form-card-step">Paso 3 de 4</div>
+                        <h2 class="form-card-title">Tus Servicios</h2>
+                        <p class="form-card-subtitle">Agrega al menos un servicio que ofrezcas. Podrás agregar más después.</p>
+                    </div>
+
+                    <div class="services-added" id="services-added">
+                        <div class="service-added-item">
+                            <span class="service-added-icon">✂️</span>
+                            <div class="service-added-info">
+                                <div class="service-added-name">Corte de Cabello</div>
+                                <div class="service-added-meta">45 min — $15.000</div>
+                            </div>
+                            <button class="service-added-remove" onclick="this.parentElement.remove()">✕</button>
+                        </div>
+                    </div>
+
+                    <div id="add-service-form" class="hidden" style="background: var(--gray-50); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; border: 1px solid var(--gray-200);">
+                        <div class="form-group" style="margin-bottom: 10px;">
+                            <input type="text" class="form-input" id="new-service-name" placeholder="Nombre del servicio">
+                        </div>
+                        <div class="form-row" style="margin-bottom: 10px;">
+                            <div>
+                                <input type="number" class="form-input" id="new-service-duration" placeholder="Duración (min)">
+                            </div>
+                            <div>
+                                <input type="number" class="form-input" id="new-service-price" placeholder="Precio ($)">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-primary" style="padding: 10px 16px; font-size: 0.8rem;" onclick="addService()">Agregar</button>
+                            <button class="btn btn-secondary" style="padding: 10px 16px; font-size: 0.8rem;" onclick="toggleServiceForm()">Cancelar</button>
+                        </div>
+                    </div>
+
+                    <button class="add-service-btn" id="add-service-toggle" onclick="toggleServiceForm()">
+                        + Agregar otro servicio
+                    </button>
+
+                    <div class="btn-group">
+                        <button class="btn btn-secondary btn-back" onclick="goToStep(2)">← Atrás</button>
+                        <button class="btn btn-primary" onclick="goToStep(4)">Siguiente →</button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: PERSONALIZACIÓN -->
+                <div id="step-4" class="form-card hidden">
+                    <div class="form-card-header">
+                        <div class="form-card-step">Paso 4 de 4</div>
+                        <h2 class="form-card-title">Personaliza tu Marca</h2>
+                        <p class="form-card-subtitle">Dale tu toque personal a tu portal de reservas.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Logotipo <span class="optional">(opcional)</span></label>
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border: 2px dashed var(--gray-300);" id="logo-preview">
+                                📷
+                            </div>
+                            <div>
+                                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.8rem;" onclick="document.getElementById('logo-upload').click()">
+                                    Subir Logo
+                                </button>
+                                <input type="file" id="logo-upload" accept="image/*" style="display:none" onchange="previewLogo(this)">
+                                <p class="form-helper" style="margin-top: 4px;">PNG, JPG o SVG. Máx 2MB.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Color principal de tu marca</label>
+                        <div class="color-picker-row">
+                            <input type="color" class="color-picker-input" id="color-picker" value="#e91e8c" onchange="updateColor(this.value)">
+                            <div class="color-presets">
+                                <div class="color-preset selected" style="background: #e91e8c;" onclick="selectColor('#e91e8c', this)"></div>
+                                <div class="color-preset" style="background: #2563eb;" onclick="selectColor('#2563eb', this)"></div>
+                                <div class="color-preset" style="background: #7c3aed;" onclick="selectColor('#7c3aed', this)"></div>
+                                <div class="color-preset" style="background: #059669;" onclick="selectColor('#059669', this)"></div>
+                                <div class="color-preset" style="background: #dc2626;" onclick="selectColor('#dc2626', this)"></div>
+                                <div class="color-preset" style="background: #ea580c;" onclick="selectColor('#ea580c', this)"></div>
+                                <div class="color-preset" style="background: #0891b2;" onclick="selectColor('#0891b2', this)"></div>
+                                <div class="color-preset" style="background: #4f46e5;" onclick="selectColor('#4f46e5', this)"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">URL de tu portal</label>
+                        <div class="slug-input-wrapper">
+                            <span class="slug-prefix">hoyenpunto.com/</span>
+                            <input type="text" class="slug-input" id="biz-slug" placeholder="mi-negocio" oninput="updateSlug(this.value)">
+                        </div>
+                        <p class="form-helper">Este será el enlace que compartes con tus clientes.</p>
+                    </div>
+
+                    <!-- Live Preview -->
+                    <div class="preview-container">
+                        <div class="preview-label">Vista previa de tu portal</div>
+                        <div class="preview-mock">
+                            <div class="preview-mock-header" id="preview-header">
+                                <div class="preview-mock-logo" id="preview-logo">💇‍♀️</div>
+                                <div class="preview-mock-name" id="preview-name">Tu Negocio</div>
+                            </div>
+                            <div class="preview-mock-body">
+                                <div style="height: 8px; background: var(--gray-100); border-radius: 4px; margin-bottom: 8px; width: 80%;"></div>
+                                <div style="height: 8px; background: var(--gray-100); border-radius: 4px; margin-bottom: 16px; width: 60%;"></div>
+                                <div class="preview-mock-btn" id="preview-btn" style="background: #e91e8c;">Reservar Ahora</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button class="btn btn-secondary btn-back" onclick="goToStep(3)">← Atrás</button>
+                        <button class="btn btn-primary" onclick="completeOnboarding()">🚀 Finalizar Configuración</button>
+                    </div>
+                </div>
+
+                <!-- STEP 5: SUCCESS -->
+                <div id="step-5" class="form-card hidden">
+                    <div class="success-screen">
+                        <div class="success-icon">🎉</div>
+                        <h2>¡Tu negocio está listo!</h2>
+                        <p>Ya puedes compartir tu enlace y empezar a recibir reservas online.</p>
+
+                        <div style="background: var(--primary-50); border-radius: var(--radius); padding: 14px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span style="font-size: 0.85rem; color: var(--primary); font-weight: 600;">🔗 hoyenpunto.com/<span id="final-slug">mi-negocio</span></span>
+                            <button onclick="copyFinalLink()" style="padding: 4px 12px; border-radius: 6px; border: none; background: var(--primary); color: white; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Copiar</button>
+                        </div>
+
+                        <div class="success-checklist">
+                            <h4>Tu progreso:</h4>
+                            <div class="success-checklist-item">
+                                <span class="check">✓</span>
+                                <span>Cuenta creada</span>
+                            </div>
+                            <div class="success-checklist-item">
+                                <span class="check">✓</span>
+                                <span>Datos del negocio configurados</span>
+                            </div>
+                            <div class="success-checklist-item">
+                                <span class="check">✓</span>
+                                <span>Horarios definidos</span>
+                            </div>
+                            <div class="success-checklist-item">
+                                <span class="check">✓</span>
+                                <span>Servicios agregados</span>
+                            </div>
+                            <div class="success-checklist-item">
+                                <span class="check">✓</span>
+                                <span>Marca personalizada</span>
+                            </div>
+                            <div class="success-checklist-item">
+                                <span class="pending"></span>
+                                <span>Agregar empleados (opcional)</span>
+                            </div>
+                            <div class="success-checklist-item">
+                                <span class="pending"></span>
+                                <span>Recibir primera reserva</span>
+                            </div>
+                        </div>
+
+                        <div class="btn-group" style="flex-direction: column; gap: 10px;">
+                            <a href="/dashboard/" class="btn btn-primary" style="text-decoration: none;">Ir a mi Panel de Control →</a>
+                            <a href="/reservar/" class="btn btn-secondary" style="text-decoration: none;" target="_blank">Ver mi Portal de Reservas</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+
+        // ===== NAVIGATION =====
+        function goToStep(step) {
+            // Hide all steps
+            for (let i = 0; i <= 5; i++) {
+                document.getElementById(`step-${i}`).classList.add('hidden');
+            }
+            
+            // Show target step
+            document.getElementById(`step-${step}`).classList.remove('hidden');
+            document.getElementById(`step-${step}`).classList.add('fade-in');
+
+            // Update progress bar
+            for (let i = 1; i <= 4; i++) {
+                const circle = document.getElementById(`prog-${i}`);
+                const line = document.getElementById(`line-${i}`);
+                circle.classList.remove('active', 'completed');
+                if (line) line.classList.remove('completed');
+
+                if (i < step) {
+                    circle.classList.add('completed');
+                    circle.innerHTML = '✓';
+                    if (line) line.classList.add('completed');
+                } else if (i === step) {
+                    circle.classList.add('active');
+                    circle.innerHTML = i;
+                } else {
+                    circle.innerHTML = i;
+                }
+            }
+
+            // Handle step 0 (registration) - hide progress
+            if (step === 0) {
+                document.getElementById('progress-bar').style.opacity = '0.3';
+            } else if (step === 5) {
+                document.getElementById('progress-bar').style.display = 'none';
+            } else {
+                document.getElementById('progress-bar').style.opacity = '1';
+                document.getElementById('progress-bar').style.display = 'flex';
+            }
+
+            currentStep = step;
+
+            // Init schedule on step 2
+            if (step === 2) initSchedule();
+        }
+
+        // ===== SCHEDULE =====
+        function initSchedule() {
+            const grid = document.getElementById('schedule-grid');
+            if (grid.children.length > 0) return; // Already initialized
+
+            const days = [
+                { name: 'Lunes', active: true },
+                { name: 'Martes', active: true },
+                { name: 'Miércoles', active: true },
+                { name: 'Jueves', active: true },
+                { name: 'Viernes', active: true },
+                { name: 'Sábado', active: true },
+                { name: 'Domingo', active: false }
+            ];
+
+            days.forEach(day => {
+                const row = document.createElement('div');
+                row.className = 'schedule-row';
+                row.innerHTML = `
+                    <span class="schedule-day">${day.name}</span>
+                    <div class="schedule-toggle ${day.active ? 'active' : ''}" onclick="this.classList.toggle('active')"></div>
+                    <div class="schedule-times">
+                        <input type="time" class="schedule-time-input" value="09:00" ${!day.active ? 'disabled' : ''}>
+                        <span class="schedule-separator">a</span>
+                        <input type="time" class="schedule-time-input" value="19:00" ${!day.active ? 'disabled' : ''}>
+                    </div>
+                `;
+                grid.appendChild(row);
+            });
+        }
+
+        // ===== SERVICES =====
+        function toggleServiceForm() {
+            const form = document.getElementById('add-service-form');
+            const toggle = document.getElementById('add-service-toggle');
+            form.classList.toggle('hidden');
+            toggle.classList.toggle('hidden');
+        }
+
+        function addService() {
+            const name = document.getElementById('new-service-name').value;
+            const duration = document.getElementById('new-service-duration').value;
+            const price = document.getElementById('new-service-price').value;
+
+            if (!name || !duration || !price) {
+                alert('Completa todos los campos del servicio.');
+                return;
+            }
+
+            const container = document.getElementById('services-added');
+            const item = document.createElement('div');
+            item.className = 'service-added-item';
+            item.innerHTML = `
+                <span class="service-added-icon">⭐</span>
+                <div class="service-added-info">
+                    <div class="service-added-name">${name}</div>
+                    <div class="service-added-meta">${duration} min — $${parseInt(price).toLocaleString('es-CL')}</div>
+                </div>
+                <button class="service-added-remove" onclick="this.parentElement.remove()">✕</button>
+            `;
+            container.appendChild(item);
+
+            // Reset form
+            document.getElementById('new-service-name').value = '';
+            document.getElementById('new-service-duration').value = '';
+            document.getElementById('new-service-price').value = '';
+            toggleServiceForm();
+        }
+
+        // ===== BRANDING =====
+        function selectColor(color, element) {
+            document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('color-picker').value = color;
+            updateColor(color);
+        }
+
+        function updateColor(color) {
+            document.getElementById('preview-header').style.background = color;
+            document.getElementById('preview-btn').style.background = color;
+        }
+
+        function updateSlug(value) {
+            const slug = value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
+            document.getElementById('biz-slug').value = slug;
+        }
+
+        function previewLogo(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('logo-preview').innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // ===== COMPLETE ONBOARDING =====
+        function completeOnboarding() {
+            const slug = document.getElementById('biz-slug').value || 'mi-negocio';
+            document.getElementById('final-slug').textContent = slug;
+            
+            // Update preview name
+            const bizName = document.getElementById('reg-business')?.value || 'Tu Negocio';
+            document.getElementById('preview-name').textContent = bizName;
+            
+            goToStep(5);
+        }
+
+        function copyFinalLink() {
+            const slug = document.getElementById('final-slug').textContent;
+            const url = `https://hoyenpunto.com/${slug}`;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('✓ Enlace copiado: ' + url);
+            }).catch(() => {
+                prompt('Copia este enlace:', url);
+            });
+        }
+    </script>
+</body>
+</html>

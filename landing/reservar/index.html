@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservar Cita — Estilo Carolina | HoyEnPunto</title>
+    <meta name="description" content="Reserva tu cita online en Estilo Carolina. Selecciona servicio, profesional y horario disponible en tiempo real.">
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Business custom colors (white-label) */
+            --biz-primary: #e91e8c;
+            --biz-primary-dark: #c2177a;
+            --biz-primary-light: #f472b6;
+            --biz-primary-50: #fdf2f8;
+            --biz-primary-100: #fce7f3;
+            /* System */
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --success: #10b981;
+            --success-50: #ecfdf5;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER DEL NEGOCIO ===== */
+        .biz-header {
+            background: linear-gradient(135deg, var(--biz-primary) 0%, var(--biz-primary-dark) 100%);
+            padding: 32px 24px;
+            text-align: center;
+            color: white;
+        }
+
+        .biz-logo {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 2rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+        }
+
+        .biz-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .biz-category {
+            font-size: 0.9rem;
+            opacity: 0.85;
+        }
+
+        .biz-info {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 12px;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* ===== STEPPER ===== */
+        .booking-container {
+            max-width: 600px;
+            margin: -20px auto 40px;
+            padding: 0 16px;
+        }
+
+        .stepper {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 24px 0 16px;
+        }
+
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            transition: all 0.3s ease;
+        }
+
+        .step-dot.active {
+            background: var(--biz-primary);
+            transform: scale(1.3);
+        }
+
+        .step-dot.completed {
+            background: var(--success);
+        }
+
+        /* ===== CARDS ===== */
+        .booking-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            padding: 28px;
+            margin-bottom: 16px;
+            border: 1px solid var(--gray-100);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            margin-bottom: 20px;
+        }
+
+        /* ===== STEP 1: SERVICES ===== */
+        .service-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            border: 2px solid var(--gray-100);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .service-item:hover {
+            border-color: var(--biz-primary-light);
+            background: var(--biz-primary-50);
+        }
+
+        .service-item.selected {
+            border-color: var(--biz-primary);
+            background: var(--biz-primary-50);
+            box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.1);
+        }
+
+        .service-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--biz-primary-50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .service-info {
+            flex: 1;
+        }
+
+        .service-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--gray-800);
+        }
+
+        .service-meta {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+            margin-top: 2px;
+        }
+
+        .service-price {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--biz-primary);
+        }
+
+        .service-check {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .service-item.selected .service-check {
+            background: var(--biz-primary);
+            border-color: var(--biz-primary);
+            color: white;
+        }
+
+        /* ===== STEP 2: STAFF ===== */
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .staff-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 12px;
+            border: 2px solid var(--gray-100);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .staff-card:hover {
+            border-color: var(--biz-primary-light);
+            background: var(--biz-primary-50);
+        }
+
+        .staff-card.selected {
+            border-color: var(--biz-primary);
+            background: var(--biz-primary-50);
+        }
+
+        .staff-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--biz-primary-light), var(--biz-primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .staff-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--gray-800);
+        }
+
+        .staff-role {
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            margin-top: 2px;
+        }
+
+        /* ===== STEP 3: DATE/TIME ===== */
+        .calendar-section {
+            margin-bottom: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .calendar-month {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--gray-800);
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .calendar-nav button {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-nav button:hover {
+            background: var(--gray-50);
+            border-color: var(--biz-primary);
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            text-align: center;
+        }
+
+        .day-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--gray-400);
+            text-transform: uppercase;
+            padding: 4px 0;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--gray-700);
+        }
+
+        .day-cell:hover:not(.disabled):not(.empty) {
+            background: var(--biz-primary-50);
+            color: var(--biz-primary);
+        }
+
+        .day-cell.selected {
+            background: var(--biz-primary);
+            color: white;
+            font-weight: 700;
+        }
+
+        .day-cell.today {
+            border: 2px solid var(--biz-primary);
+        }
+
+        .day-cell.disabled {
+            color: var(--gray-300);
+            cursor: not-allowed;
+        }
+
+        .day-cell.empty {
+            cursor: default;
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .time-slot {
+            padding: 12px 8px;
+            border: 2px solid var(--gray-100);
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            color: var(--gray-700);
+        }
+
+        .time-slot:hover {
+            border-color: var(--biz-primary-light);
+            background: var(--biz-primary-50);
+            color: var(--biz-primary);
+        }
+
+        .time-slot.selected {
+            background: var(--biz-primary);
+            border-color: var(--biz-primary);
+            color: white;
+        }
+
+        .time-slot.unavailable {
+            background: var(--gray-50);
+            color: var(--gray-300);
+            cursor: not-allowed;
+            border-color: var(--gray-100);
+            text-decoration: line-through;
+        }
+
+        /* ===== STEP 4: FORM ===== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--biz-primary);
+            box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--gray-300);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* ===== STEP 5: CONFIRMATION ===== */
+        .confirmation {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .confirmation-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--success-50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .confirmation h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .confirmation p {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.9rem;
+        }
+
+        .summary-row:last-child { border-bottom: none; }
+
+        .summary-label {
+            color: var(--gray-500);
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 28px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--biz-primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(233, 30, 140, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--biz-primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(233, 30, 140, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        .btn-back {
+            width: auto;
+            flex: 0.4 !important;
+        }
+
+        /* ===== POWERED BY ===== */
+        .powered-by {
+            text-align: center;
+            padding: 24px 0;
+            font-size: 0.8rem;
+            color: var(--gray-400);
+        }
+
+        .powered-by a {
+            color: var(--gray-500);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .powered-by a:hover {
+            color: var(--biz-primary);
+        }
+
+        /* ===== HIDDEN ===== */
+        .hidden { display: none !important; }
+
+        /* ===== ANIMATIONS ===== */
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            .staff-grid {
+                grid-template-columns: 1fr;
+            }
+            .time-slots {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .biz-header {
+                padding: 24px 16px;
+            }
+            .booking-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER DEL NEGOCIO (White-Label) -->
+    <header class="biz-header">
+        <div class="biz-logo">💇‍♀️</div>
+        <h1 class="biz-name">Estilo Carolina</h1>
+        <p class="biz-category">Salón de Belleza & Estilismo</p>
+        <div class="biz-info">
+            <span>📍 Av. Providencia 1234, Santiago</span>
+            <span>⭐ 4.9 (128 reseñas)</span>
+        </div>
+    </header>
+
+    <!-- BOOKING WIDGET -->
+    <div class="booking-container">
+        
+        <!-- STEPPER -->
+        <div class="stepper">
+            <div class="step-dot active" data-step="1"></div>
+            <div class="step-dot" data-step="2"></div>
+            <div class="step-dot" data-step="3"></div>
+            <div class="step-dot" data-step="4"></div>
+            <div class="step-dot" data-step="5"></div>
+        </div>
+
+        <!-- STEP 1: SELECCIÓN DE SERVICIO -->
+        <div id="step-1" class="booking-card fade-in">
+            <h2 class="card-title">¿Qué servicio necesitas?</h2>
+            <p class="card-subtitle">Selecciona uno o más servicios</p>
+            
+            <div class="service-list">
+                <div class="service-item" data-service="corte" data-price="15000" data-duration="45">
+                    <div class="service-icon">✂️</div>
+                    <div class="service-info">
+                        <div class="service-name">Corte de Cabello</div>
+                        <div class="service-meta">45 min</div>
+                    </div>
+                    <div class="service-price">$15.000</div>
+                    <div class="service-check">✓</div>
+                </div>
+                <div class="service-item" data-service="color" data-price="35000" data-duration="90">
+                    <div class="service-icon">🎨</div>
+                    <div class="service-info">
+                        <div class="service-name">Coloración Completa</div>
+                        <div class="service-meta">90 min</div>
+                    </div>
+                    <div class="service-price">$35.000</div>
+                    <div class="service-check">✓</div>
+                </div>
+                <div class="service-item" data-service="manicure" data-price="12000" data-duration="30">
+                    <div class="service-icon">💅</div>
+                    <div class="service-info">
+                        <div class="service-name">Manicure Semipermanente</div>
+                        <div class="service-meta">30 min</div>
+                    </div>
+                    <div class="service-price">$12.000</div>
+                    <div class="service-check">✓</div>
+                </div>
+                <div class="service-item" data-service="brushing" data-price="18000" data-duration="40">
+                    <div class="service-icon">💆‍♀️</div>
+                    <div class="service-info">
+                        <div class="service-name">Brushing + Tratamiento</div>
+                        <div class="service-meta">40 min</div>
+                    </div>
+                    <div class="service-price">$18.000</div>
+                    <div class="service-check">✓</div>
+                </div>
+                <div class="service-item" data-service="barba" data-price="8000" data-duration="20">
+                    <div class="service-icon">🧔</div>
+                    <div class="service-info">
+                        <div class="service-name">Perfilado de Barba</div>
+                        <div class="service-meta">20 min</div>
+                    </div>
+                    <div class="service-price">$8.000</div>
+                    <div class="service-check">✓</div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" id="btn-step1" disabled onclick="goToStep(2)">
+                    Siguiente →
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 2: SELECCIÓN DE PROFESIONAL -->
+        <div id="step-2" class="booking-card hidden">
+            <h2 class="card-title">¿Con quién prefieres?</h2>
+            <p class="card-subtitle">Elige tu profesional favorito</p>
+            
+            <div class="staff-grid">
+                <div class="staff-card" data-staff="carolina" onclick="selectStaff(this)">
+                    <div class="staff-avatar">C</div>
+                    <div class="staff-name">Carolina M.</div>
+                    <div class="staff-role">Directora Creativa</div>
+                </div>
+                <div class="staff-card" data-staff="daniela" onclick="selectStaff(this)">
+                    <div class="staff-avatar">D</div>
+                    <div class="staff-name">Daniela T.</div>
+                    <div class="staff-role">Estilista Senior</div>
+                </div>
+                <div class="staff-card" data-staff="valentina" onclick="selectStaff(this)">
+                    <div class="staff-avatar">V</div>
+                    <div class="staff-name">Valentina R.</div>
+                    <div class="staff-role">Colorista</div>
+                </div>
+                <div class="staff-card" data-staff="any" onclick="selectStaff(this)">
+                    <div class="staff-avatar">🎲</div>
+                    <div class="staff-name">Sin preferencia</div>
+                    <div class="staff-role">Primer disponible</div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary btn-back" onclick="goToStep(1)">← Atrás</button>
+                <button class="btn btn-primary" id="btn-step2" disabled onclick="goToStep(3)">
+                    Siguiente →
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 3: FECHA Y HORA -->
+        <div id="step-3" class="booking-card hidden">
+            <h2 class="card-title">¿Cuándo te acomoda?</h2>
+            <p class="card-subtitle">Selecciona fecha y horario disponible</p>
+            
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <span class="calendar-month" id="calendar-month">Agosto 2026</span>
+                    <div class="calendar-nav">
+                        <button onclick="changeMonth(-1)">‹</button>
+                        <button onclick="changeMonth(1)">›</button>
+                    </div>
+                </div>
+                <div class="calendar-days" id="calendar-grid">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+
+            <div id="time-section" class="hidden">
+                <h3 style="font-size: 0.9rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">
+                    Horarios disponibles:
+                </h3>
+                <div class="time-slots" id="time-slots">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary btn-back" onclick="goToStep(2)">← Atrás</button>
+                <button class="btn btn-primary" id="btn-step3" disabled onclick="goToStep(4)">
+                    Siguiente →
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 4: DATOS DEL CLIENTE -->
+        <div id="step-4" class="booking-card hidden">
+            <h2 class="card-title">Tus datos de contacto</h2>
+            <p class="card-subtitle">Para confirmar tu reserva</p>
+            
+            <form id="booking-form" onsubmit="submitBooking(event)">
+                <div class="form-group">
+                    <label class="form-label">Nombre completo *</label>
+                    <input type="text" class="form-input" id="client-name" placeholder="Ej: Martín Rojas" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono *</label>
+                    <input type="tel" class="form-input" id="client-phone" placeholder="+56 9 1234 5678" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input type="email" class="form-input" id="client-email" placeholder="tu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notas adicionales (opcional)</label>
+                    <textarea class="form-input" id="client-notes" placeholder="Ej: Quiero un corte degradé..."></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary btn-back" onclick="goToStep(3)">← Atrás</button>
+                    <button type="submit" class="btn btn-primary">
+                        ✓ Confirmar Reserva
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- STEP 5: CONFIRMACIÓN -->
+        <div id="step-5" class="booking-card hidden">
+            <div class="confirmation">
+                <div class="confirmation-icon">✅</div>
+                <h2>¡Reserva Confirmada!</h2>
+                <p>Recibirás un email de confirmación con todos los detalles.</p>
+
+                <div class="summary-card">
+                    <div class="summary-row">
+                        <span class="summary-label">Servicio</span>
+                        <span class="summary-value" id="sum-service">—</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Profesional</span>
+                        <span class="summary-value" id="sum-staff">—</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Fecha</span>
+                        <span class="summary-value" id="sum-date">—</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Hora</span>
+                        <span class="summary-value" id="sum-time">—</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Cliente</span>
+                        <span class="summary-value" id="sum-client">—</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Total</span>
+                        <span class="summary-value" id="sum-total" style="color: var(--biz-primary);">—</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="window.location.href='/'">
+                    ← Volver al inicio
+                </button>
+            </div>
+        </div>
+
+        <!-- POWERED BY -->
+        <div class="powered-by">
+            Powered by <a href="/">🕐 HoyEnPunto</a>
+        </div>
+    </div>
+
+    <script>
+        // ===== STATE =====
+        let currentStep = 1;
+        let selectedServices = [];
+        let selectedStaff = null;
+        let selectedDate = null;
+        let selectedTime = null;
+        let currentMonth = new Date(2026, 7); // Agosto 2026
+
+        // ===== STEP NAVIGATION =====
+        function goToStep(step) {
+            document.querySelectorAll('.booking-card').forEach(card => card.classList.add('hidden'));
+            document.getElementById(`step-${step}`).classList.remove('hidden');
+            document.getElementById(`step-${step}`).classList.add('fade-in');
+            
+            document.querySelectorAll('.step-dot').forEach((dot, i) => {
+                dot.classList.remove('active', 'completed');
+                if (i + 1 < step) dot.classList.add('completed');
+                if (i + 1 === step) dot.classList.add('active');
+            });
+            
+            currentStep = step;
+            if (step === 3) renderCalendar();
+        }
+
+        // ===== STEP 1: SERVICES =====
+        document.querySelectorAll('.service-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('selected');
+                const service = item.dataset.service;
+                if (item.classList.contains('selected')) {
+                    selectedServices.push({
+                        name: item.querySelector('.service-name').textContent,
+                        price: parseInt(item.dataset.price),
+                        duration: parseInt(item.dataset.duration),
+                        id: service
+                    });
+                } else {
+                    selectedServices = selectedServices.filter(s => s.id !== service);
+                }
+                document.getElementById('btn-step1').disabled = selectedServices.length === 0;
+            });
+        });
+
+        // ===== STEP 2: STAFF =====
+        function selectStaff(card) {
+            document.querySelectorAll('.staff-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectedStaff = {
+                id: card.dataset.staff,
+                name: card.querySelector('.staff-name').textContent
+            };
+            document.getElementById('btn-step2').disabled = false;
+        }
+
+        // ===== STEP 3: CALENDAR =====
+        function renderCalendar() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+
+            const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            document.getElementById('calendar-month').textContent = `${monthNames[month]} ${year}`;
+
+            let html = '';
+            const dayLabels = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+            dayLabels.forEach(d => { html += `<div class="day-label">${d}</div>`; });
+
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="day-cell empty"></div>';
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                const isSunday = date.getDay() === 0;
+                const isToday = date.toDateString() === today.toDateString();
+                const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
+                
+                let classes = 'day-cell';
+                if (isPast || isSunday) classes += ' disabled';
+                if (isToday) classes += ' today';
+                if (isSelected) classes += ' selected';
+
+                html += `<div class="${classes}" onclick="selectDate(${year},${month},${day})">${day}</div>`;
+            }
+
+            document.getElementById('calendar-grid').innerHTML = html;
+        }
+
+        function selectDate(year, month, day) {
+            const date = new Date(year, month, day);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            if (date < today || date.getDay() === 0) return;
+
+            selectedDate = date;
+            renderCalendar();
+            showTimeSlots();
+        }
+
+        function showTimeSlots() {
+            const slots = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00'];
+            // Simulate some slots being taken
+            const taken = ['10:00','11:30','14:30','16:00'];
+
+            let html = '';
+            slots.forEach(slot => {
+                const isTaken = taken.includes(slot);
+                html += `<div class="time-slot ${isTaken ? 'unavailable' : ''}" 
+                          onclick="${isTaken ? '' : `selectTime('${slot}')`}">${slot}</div>`;
+            });
+
+            document.getElementById('time-slots').innerHTML = html;
+            document.getElementById('time-section').classList.remove('hidden');
+        }
+
+        function selectTime(time) {
+            selectedTime = time;
+            document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+            event.target.classList.add('selected');
+            document.getElementById('btn-step3').disabled = false;
+        }
+
+        function changeMonth(delta) {
+            currentMonth.setMonth(currentMonth.getMonth() + delta);
+            selectedDate = null;
+            selectedTime = null;
+            document.getElementById('time-section').classList.add('hidden');
+            document.getElementById('btn-step3').disabled = true;
+            renderCalendar();
+        }
+
+        // ===== STEP 4: SUBMIT =====
+        function submitBooking(e) {
+            e.preventDefault();
+            
+            const clientName = document.getElementById('client-name').value;
+            const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
+            const serviceNames = selectedServices.map(s => s.name).join(', ');
+            
+            const dateStr = selectedDate.toLocaleDateString('es-CL', { 
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
+            });
+
+            document.getElementById('sum-service').textContent = serviceNames;
+            document.getElementById('sum-staff').textContent = selectedStaff.name;
+            document.getElementById('sum-date').textContent = dateStr;
+            document.getElementById('sum-time').textContent = selectedTime + ' hrs';
+            document.getElementById('sum-client').textContent = clientName;
+            document.getElementById('sum-total').textContent = '$' + totalPrice.toLocaleString('es-CL');
+
+            goToStep(5);
+        }
+
+        // Init
+        renderCalendar();
+    </script>
+</body>
+</html>
