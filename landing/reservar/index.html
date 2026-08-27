@@ -1199,6 +1199,38 @@
 
             goToStep(5);
             Utils.toast('¡Reserva confirmada! 🎉', 'success');
+
+            // Send confirmation email (non-blocking)
+            sendConfirmationEmail({
+                customerName: clientName,
+                customerEmail: clientEmail,
+                serviceName: selectedServices.map(s => s.name).join(', '),
+                staffName: selectedStaff.name,
+                date: dateDisplay,
+                time: selectedTime + ' hrs',
+                businessName: business.name,
+                businessAddress: business.address || '',
+                totalPrice: Utils.formatPrice(totalPrice)
+            });
+        }
+
+        // ===== SEND CONFIRMATION EMAIL =====
+        async function sendConfirmationEmail(data) {
+            try {
+                const resp = await fetch('/api/send-confirmation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await resp.json();
+                if (result.sent) {
+                    console.log('[HoyEnPunto] ✅ Email de confirmación enviado');
+                } else {
+                    console.log('[HoyEnPunto] ⚠️ Email no enviado:', result.error);
+                }
+            } catch(e) {
+                console.log('[HoyEnPunto] ⚠️ No se pudo enviar email:', e.message);
+            }
         }
     </script>
 </body>

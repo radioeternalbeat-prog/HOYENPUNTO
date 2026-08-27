@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Servicios — HoyEnPunto</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff8000; --primary-dark: #e67300; --primary-light: #ff9933;
+            --primary-50: rgba(255,128,0,0.08); --primary-glow: 0 0 20px rgba(255,128,0,0.4);
+            --accent: #e1ff00; --forest-950: #05140b; --forest-900: #0a2616;
+            --surface: rgba(255,255,255,0.03); --surface-hover: rgba(255,255,255,0.06);
+            --surface-border: rgba(255,255,255,0.07); --glass-bg: rgba(255,255,255,0.025);
+            --glass-border: rgba(255,255,255,0.08); --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --text-primary: #fff; --text-secondary: rgba(255,255,255,0.75);
+            --text-muted: rgba(255,255,255,0.45); --text-dim: rgba(255,255,255,0.25);
+            --success: #10b981; --danger: #ef4444; --radius: 10px; --radius-lg: 14px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--forest-950);
+            background-image: radial-gradient(ellipse at 90% 10%, rgba(255,128,0,0.04) 0%, transparent 40%);
+            color: var(--text-primary); min-height: 100vh; padding: 24px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .back-btn {
+            display: flex; align-items: center; gap: 6px; padding: 8px 14px;
+            border-radius: 8px; border: 1px solid var(--surface-border); background: var(--surface);
+            color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500;
+            transition: all 0.15s ease;
+        }
+        .back-btn:hover { background: var(--surface-hover); border-color: var(--primary); color: var(--primary); }
+        .header h1 { font-size: 1.5rem; font-weight: 800; }
+        .btn-add {
+            display: flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: 8px;
+            background: var(--primary); color: var(--forest-950); border: none; font-size: 0.85rem;
+            font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: var(--primary-glow);
+            transition: all 0.2s ease;
+        }
+        .btn-add:hover { background: var(--primary-light); transform: translateY(-1px); }
+        /* Services list */
+        .services-list { display: flex; flex-direction: column; gap: 12px; }
+        .service-card {
+            display: flex; align-items: center; gap: 16px; padding: 18px 20px;
+            background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border); transition: all 0.2s ease;
+        }
+        .service-card:hover { border-color: rgba(255,128,0,0.2); }
+        .service-icon { font-size: 1.8rem; width: 48px; height: 48px; border-radius: 12px; background: var(--primary-50); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .service-info { flex: 1; }
+        .service-name { font-weight: 700; font-size: 1rem; margin-bottom: 2px; }
+        .service-meta { font-size: 0.8rem; color: var(--text-muted); }
+        .service-price { font-weight: 700; font-size: 1.1rem; color: var(--primary); margin-right: 16px; }
+        .service-actions { display: flex; gap: 8px; }
+        .action-btn {
+            width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--surface-border);
+            background: var(--surface); cursor: pointer; display: flex; align-items: center;
+            justify-content: center; font-size: 0.8rem; transition: all 0.15s ease;
+        }
+        .action-btn:hover { background: var(--surface-hover); }
+        .action-btn.delete:hover { border-color: var(--danger); background: rgba(239,68,68,0.1); }
+        /* Modal */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; z-index: 1000; padding: 24px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: var(--forest-900); border-radius: 20px; padding: 32px; width: 100%;
+            max-width: 480px; border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);
+        }
+        .modal h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; }
+        .form-input {
+            width: 100%; padding: 11px 14px; border: 1px solid var(--surface-border); border-radius: 8px;
+            font-size: 0.9rem; font-family: inherit; outline: none; background: var(--surface); color: var(--text-primary);
+            transition: border-color 0.2s;
+        }
+        .form-input:focus { border-color: var(--primary); }
+        .form-input::placeholder { color: var(--text-dim); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+        .modal-actions .btn { flex: 1; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; font-family: inherit; }
+        .btn-save { background: var(--primary); color: var(--forest-950); box-shadow: var(--primary-glow); }
+        .btn-save:hover { background: var(--primary-light); }
+        .btn-cancel { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--surface-border); }
+        .btn-cancel:hover { background: var(--surface-hover); }
+        /* Empty state */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .empty-state p { margin-top: 8px; font-size: 0.9rem; }
+        /* Icon picker */
+        .icon-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+        .icon-option {
+            width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--surface-border);
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem;
+            transition: all 0.15s; background: var(--surface);
+        }
+        .icon-option:hover { border-color: var(--primary); background: var(--primary-50); }
+        .icon-option.selected { border-color: var(--primary); background: var(--primary-50); box-shadow: 0 0 10px rgba(255,128,0,0.2); }
+        @media (max-width: 600px) {
+            .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .service-card { flex-wrap: wrap; }
+            .service-price { width: 100%; margin: 8px 0 0; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <a href="/dashboard/" class="back-btn">← Volver</a>
+                <h1>💼 Mis Servicios</h1>
+            </div>
+            <button class="btn-add" onclick="openModal()">+ Agregar Servicio</button>
+        </div>
+
+        <div class="services-list" id="services-list">
+            <div class="empty-state">
+                <p style="font-size: 2rem;">⏳</p>
+                <p>Cargando servicios...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Agregar/Editar Servicio -->
+    <div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this) closeModal()">
+        <div class="modal">
+            <h3 id="modal-title">Agregar Servicio</h3>
+            <form id="service-form" onsubmit="saveService(event)">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label class="form-label">Nombre del servicio *</label>
+                    <input type="text" class="form-input" id="svc-name" placeholder="Ej: Corte de Cabello" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descripción (opcional)</label>
+                    <input type="text" class="form-input" id="svc-desc" placeholder="Breve descripción del servicio">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Duración (minutos) *</label>
+                        <input type="number" class="form-input" id="svc-duration" placeholder="45" min="5" max="480" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Precio ($) *</label>
+                        <input type="number" class="form-input" id="svc-price" placeholder="15000" min="0" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ícono</label>
+                    <div class="icon-picker" id="icon-picker">
+                        <div class="icon-option selected" data-icon="✂️" onclick="selectIcon(this)">✂️</div>
+                        <div class="icon-option" data-icon="🎨" onclick="selectIcon(this)">🎨</div>
+                        <div class="icon-option" data-icon="💅" onclick="selectIcon(this)">💅</div>
+                        <div class="icon-option" data-icon="💆‍♀️" onclick="selectIcon(this)">💆‍♀️</div>
+                        <div class="icon-option" data-icon="🧔" onclick="selectIcon(this)">🧔</div>
+                        <div class="icon-option" data-icon="💇‍♀️" onclick="selectIcon(this)">💇‍♀️</div>
+                        <div class="icon-option" data-icon="🦷" onclick="selectIcon(this)">🦷</div>
+                        <div class="icon-option" data-icon="💆" onclick="selectIcon(this)">💆</div>
+                        <div class="icon-option" data-icon="🧠" onclick="selectIcon(this)">🧠</div>
+                        <div class="icon-option" data-icon="⭐" onclick="selectIcon(this)">⭐</div>
+                        <div class="icon-option" data-icon="🏋️" onclick="selectIcon(this)">🏋️</div>
+                        <div class="icon-option" data-icon="🔧" onclick="selectIcon(this)">🔧</div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-save" id="save-btn">Guardar Servicio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supabase SDK + Modules -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/db.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <script>
+        let business = null;
+        let services = [];
+        let selectedIcon = '✂️';
+
+        // ===== INIT =====
+        (async () => {
+            const user = await Auth.requireAuth('/login/');
+            if (!user) return;
+
+            const { data: biz } = await DB.businesses.getMine();
+            if (!biz) { window.location.href = '/registro/'; return; }
+            business = biz;
+
+            await loadServices();
+        })();
+
+        // ===== LOAD SERVICES =====
+        async function loadServices() {
+            const { data } = await DB.services.getByBusiness(business.id, false);
+            services = data || [];
+            renderServices();
+        }
+
+        function renderServices() {
+            const container = document.getElementById('services-list');
+
+            if (services.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p style="font-size: 2.5rem;">💼</p>
+                        <p>No tienes servicios aún.</p>
+                        <p style="font-size: 0.8rem; margin-top: 4px;">Click "Agregar Servicio" para crear tu primer servicio.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = services.map(svc => `
+                <div class="service-card" data-id="${svc.id}" style="${!svc.is_active ? 'opacity: 0.5;' : ''}">
+                    <div class="service-icon">${svc.icon || '⭐'}</div>
+                    <div class="service-info">
+                        <div class="service-name">${svc.name}${!svc.is_active ? ' <span style="font-size:0.7rem; color:var(--danger);">(desactivado)</span>' : ''}</div>
+                        <div class="service-meta">${Utils.formatDuration(svc.duration_minutes)}${svc.description ? ' — ' + svc.description : ''}</div>
+                    </div>
+                    <div class="service-price">${Utils.formatPrice(svc.price)}</div>
+                    <div class="service-actions">
+                        <button class="action-btn" onclick="editService('${svc.id}')" title="Editar">✏️</button>
+                        <button class="action-btn delete" onclick="deleteService('${svc.id}', '${svc.name}')" title="Eliminar">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ===== MODAL =====
+        function openModal(editId = null) {
+            document.getElementById('modal-overlay').classList.add('show');
+            document.getElementById('edit-id').value = editId || '';
+            document.getElementById('modal-title').textContent = editId ? 'Editar Servicio' : 'Agregar Servicio';
+            document.getElementById('save-btn').textContent = editId ? 'Guardar Cambios' : 'Guardar Servicio';
+
+            if (editId) {
+                const svc = services.find(s => s.id === editId);
+                if (svc) {
+                    document.getElementById('svc-name').value = svc.name;
+                    document.getElementById('svc-desc').value = svc.description || '';
+                    document.getElementById('svc-duration').value = svc.duration_minutes;
+                    document.getElementById('svc-price').value = svc.price;
+                    selectIconByValue(svc.icon || '⭐');
+                }
+            } else {
+                document.getElementById('service-form').reset();
+                selectIconByValue('✂️');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('show');
+        }
+
+        function selectIcon(el) {
+            document.querySelectorAll('.icon-option').forEach(i => i.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedIcon = el.dataset.icon;
+        }
+
+        function selectIconByValue(icon) {
+            const el = document.querySelector(`.icon-option[data-icon="${icon}"]`);
+            if (el) selectIcon(el);
+            else selectedIcon = icon;
+        }
+
+        // ===== SAVE SERVICE =====
+        async function saveService(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-id').value;
+            const name = document.getElementById('svc-name').value.trim();
+            const description = document.getElementById('svc-desc').value.trim();
+            const duration_minutes = parseInt(document.getElementById('svc-duration').value);
+            const price = parseInt(document.getElementById('svc-price').value);
+
+            if (!name || !duration_minutes || isNaN(price)) {
+                Utils.toast('Completa todos los campos obligatorios', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('save-btn');
+            btn.textContent = 'Guardando...';
+            btn.disabled = true;
+
+            if (editId) {
+                // Update existing
+                const { error } = await DB.services.update(editId, {
+                    name, description: description || null, duration_minutes, price, icon: selectedIcon
+                });
+                if (error) {
+                    Utils.toast('Error: ' + error, 'error');
+                } else {
+                    Utils.toast('Servicio actualizado ✓', 'success');
+                }
+            } else {
+                // Create new
+                const { error } = await DB.services.create(business.id, {
+                    name, description: description || null, duration_minutes, price, icon: selectedIcon,
+                    sort_order: services.length + 1
+                });
+                if (error) {
+                    Utils.toast('Error: ' + error, 'error');
+                } else {
+                    Utils.toast('Servicio creado ✓', 'success');
+                }
+            }
+
+            btn.textContent = 'Guardar Servicio';
+            btn.disabled = false;
+            closeModal();
+            await loadServices();
+        }
+
+        // ===== EDIT / DELETE =====
+        function editService(id) {
+            openModal(id);
+        }
+
+        async function deleteService(id, name) {
+            if (!confirm(`¿Eliminar el servicio "${name}"? Esto no se puede deshacer.`)) return;
+
+            const { error } = await DB.services.delete(id);
+            if (error) {
+                Utils.toast('Error al eliminar: ' + error, 'error');
+            } else {
+                Utils.toast('Servicio eliminado', 'success');
+                await loadServices();
+            }
+        }
+    </script>
+</body>
+</html>

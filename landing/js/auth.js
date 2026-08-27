@@ -77,16 +77,24 @@ const Auth = {
      * Obtener el usuario actual (null si no está logueado)
      */
     async getUser() {
-        const { data: { user } } = await sb.auth.getUser();
-        return user;
+        try {
+            const { data: { user } } = await sb.auth.getUser();
+            return user;
+        } catch(e) {
+            return null;
+        }
     },
 
     /**
      * Obtener la sesión actual
      */
     async getSession() {
-        const { data: { session } } = await sb.auth.getSession();
-        return session;
+        try {
+            const { data: { session } } = await sb.auth.getSession();
+            return session;
+        } catch(e) {
+            return null;
+        }
     },
 
     /**

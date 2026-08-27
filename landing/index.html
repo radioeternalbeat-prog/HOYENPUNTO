@@ -27,7 +27,7 @@
                 <a href="#features">Funciones</a>
                 <a href="#how-it-works">Cómo Funciona</a>
                 <a href="#pricing">Planes</a>
-                <a href="#contact" class="btn btn-outline">Contacto</a>
+                <a href="/login/" class="btn btn-outline">Iniciar Sesión</a>
                 <a href="/registro/" class="btn btn-primary">Empezar Gratis</a>
             </div>
             <button class="mobile-menu-btn" aria-label="Menú">
@@ -334,6 +334,11 @@
         </div>
     </footer>
 
+    <!-- Supabase SDK (for auth detection) -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+
     <script>
         // Mobile menu toggle
         const menuBtn = document.querySelector('.mobile-menu-btn');
@@ -366,6 +371,31 @@
                 navbar.classList.remove('scrolled');
             }
         });
+
+        // Check if user is logged in → show dashboard button
+        (async () => {
+            try {
+                const user = await Auth.getUser();
+                if (user) {
+                    // Replace "Iniciar Sesión" with "Mi Dashboard"
+                    const loginBtn = document.querySelector('.nav-links .btn-outline');
+                    if (loginBtn) {
+                        loginBtn.textContent = '📊 Mi Dashboard';
+                        loginBtn.href = '/dashboard/';
+                        loginBtn.style.borderColor = 'rgba(255,128,0,0.4)';
+                        loginBtn.style.color = '#ff9933';
+                    }
+                    // Replace "Empezar Gratis" with "Panel de Control"
+                    const registerBtn = document.querySelector('.nav-links .btn-primary');
+                    if (registerBtn) {
+                        registerBtn.textContent = 'Panel de Control →';
+                        registerBtn.href = '/dashboard/';
+                    }
+                }
+            } catch(e) {
+                // Not logged in, keep default buttons
+            }
+        })();
     </script>
 </body>
 </html>

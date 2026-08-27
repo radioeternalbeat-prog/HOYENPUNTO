@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión — HoyEnPunto</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff8000;
+            --primary-dark: #e67300;
+            --primary-light: #ff9933;
+            --primary-glow: 0 0 20px rgba(255, 128, 0, 0.4);
+            --accent: #e1ff00;
+            --forest-950: #05140b;
+            --forest-900: #0a2616;
+            --surface: rgba(255, 255, 255, 0.03);
+            --surface-border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.025);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.75);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --text-dim: rgba(255, 255, 255, 0.25);
+            --success: #10b981;
+            --danger: #ef4444;
+            --radius: 10px;
+            --radius-xl: 20px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--forest-950);
+            background-image:
+                radial-gradient(ellipse at 70% 20%, rgba(255, 128, 0, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 30% 80%, rgba(225, 255, 0, 0.03) 0%, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 32px;
+            text-decoration: none;
+        }
+        .logo-icon { font-size: 1.8rem; }
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            padding: 36px;
+            box-shadow: var(--glass-shadow);
+            border: 1px solid var(--glass-border);
+        }
+        .login-card h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .login-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            outline: none;
+            background: var(--surface);
+            color: var(--text-primary);
+        }
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 128, 0, 0.15);
+        }
+        .form-input::placeholder { color: var(--text-dim); }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px 24px;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            margin-top: 24px;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: var(--forest-950);
+            box-shadow: var(--primary-glow);
+        }
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: 0 0 30px rgba(255, 128, 0, 0.5);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+        .login-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .login-footer a:hover { text-decoration: underline; color: var(--primary-light); }
+        .error-msg {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            color: #f87171;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .error-msg.show { display: block; }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(5,20,11,0.3);
+            border-top-color: var(--forest-950);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <a href="/" class="logo">
+            <span class="logo-icon">🕐</span>
+            <span class="logo-text">HoyEnPunto</span>
+        </a>
+
+        <div class="login-card">
+            <h2>Iniciar Sesión</h2>
+            <p>Ingresa a tu panel de control para gestionar tu negocio.</p>
+
+            <div class="error-msg" id="error-msg"></div>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="login-email" placeholder="tu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" class="form-input" id="login-password" placeholder="Tu contraseña" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="login-btn">Iniciar Sesión →</button>
+            </form>
+
+            <div class="login-footer">
+                <p>¿No tienes cuenta? <a href="/registro/">Crear cuenta gratis</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase SDK + Modules -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <script>
+        // If already logged in, go to dashboard
+        (async () => {
+            const user = await Auth.getUser();
+            if (user) window.location.href = '/dashboard/';
+        })();
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-btn');
+            const errorEl = document.getElementById('error-msg');
+
+            errorEl.classList.remove('show');
+            btn.innerHTML = '<span class="spinner"></span> Ingresando...';
+            btn.disabled = true;
+
+            try {
+                const { user, error } = await Auth.signIn(email, password);
+
+                if (error) {
+                    errorEl.textContent = error.includes('Invalid login')
+                        ? 'Email o contraseña incorrectos.'
+                        : error;
+                    errorEl.classList.add('show');
+                    btn.innerHTML = 'Iniciar Sesión →';
+                    btn.disabled = false;
+                    return;
+                }
+
+                btn.innerHTML = '✓ Redirigiendo...';
+                window.location.href = '/dashboard/';
+            } catch(err) {
+                errorEl.textContent = 'Error de conexión. Intenta de nuevo.';
+                errorEl.classList.add('show');
+                btn.innerHTML = 'Iniciar Sesión →';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
