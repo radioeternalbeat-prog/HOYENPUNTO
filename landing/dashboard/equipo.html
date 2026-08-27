@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipo — HoyEnPunto</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff8000; --primary-dark: #e67300; --primary-light: #ff9933;
+            --primary-50: rgba(255,128,0,0.08); --primary-glow: 0 0 20px rgba(255,128,0,0.4);
+            --forest-950: #05140b; --forest-900: #0a2616;
+            --surface: rgba(255,255,255,0.03); --surface-hover: rgba(255,255,255,0.06);
+            --surface-border: rgba(255,255,255,0.07); --glass-bg: rgba(255,255,255,0.025);
+            --glass-border: rgba(255,255,255,0.08); --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --text-primary: #fff; --text-secondary: rgba(255,255,255,0.75);
+            --text-muted: rgba(255,255,255,0.45); --text-dim: rgba(255,255,255,0.25);
+            --success: #10b981; --danger: #ef4444; --radius: 10px; --radius-lg: 14px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--forest-950); background-image: radial-gradient(ellipse at 10% 80%, rgba(255,128,0,0.04) 0%, transparent 40%); color: var(--text-primary); min-height: 100vh; padding: 24px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .back-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--surface-border); background: var(--surface); color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: all 0.15s; }
+        .back-btn:hover { background: var(--surface-hover); border-color: var(--primary); color: var(--primary); }
+        .header h1 { font-size: 1.5rem; font-weight: 800; }
+        .btn-add { display: flex; align-items: center; gap: 6px; padding: 10px 18px; border-radius: 8px; background: var(--primary); color: var(--forest-950); border: none; font-size: 0.85rem; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: var(--primary-glow); transition: all 0.2s; }
+        .btn-add:hover { background: var(--primary-light); transform: translateY(-1px); }
+        .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .staff-card { padding: 24px; background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); text-align: center; transition: all 0.2s; }
+        .staff-card:hover { border-color: rgba(255,128,0,0.2); }
+        .staff-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-light), var(--primary)); display: flex; align-items: center; justify-content: center; color: var(--forest-950); font-weight: 800; font-size: 1.3rem; margin: 0 auto 12px; }
+        .staff-name { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+        .staff-role { font-size: 0.8rem; color: var(--primary-light); margin-bottom: 4px; }
+        .staff-bio { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
+        .staff-email { font-size: 0.75rem; color: var(--text-dim); }
+        .staff-actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+        .action-btn { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--surface-border); background: var(--surface); cursor: pointer; font-size: 0.75rem; color: var(--text-secondary); transition: all 0.15s; }
+        .action-btn:hover { background: var(--surface-hover); border-color: var(--primary); color: var(--primary); }
+        .action-btn.delete:hover { border-color: var(--danger); color: var(--danger); }
+        .badge-owner { display: inline-block; padding: 2px 8px; border-radius: 100px; background: rgba(225,255,0,0.1); color: #e1ff00; font-size: 0.65rem; font-weight: 700; margin-top: 6px; }
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 24px; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: var(--forest-900); border-radius: 20px; padding: 32px; width: 100%; max-width: 440px; border: 1px solid var(--glass-border); }
+        .modal h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; }
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; }
+        .form-input { width: 100%; padding: 11px 14px; border: 1px solid var(--surface-border); border-radius: 8px; font-size: 0.9rem; font-family: inherit; outline: none; background: var(--surface); color: var(--text-primary); }
+        .form-input:focus { border-color: var(--primary); }
+        .form-input::placeholder { color: var(--text-dim); }
+        .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+        .modal-actions .btn { flex: 1; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: none; font-family: inherit; }
+        .btn-save { background: var(--primary); color: var(--forest-950); }
+        .btn-cancel { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--surface-border); }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        @media (max-width: 600px) { .header { flex-direction: column; align-items: flex-start; gap: 12px; } .staff-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <a href="/dashboard/" class="back-btn">← Volver</a>
+                <h1>👩‍💼 Mi Equipo</h1>
+            </div>
+            <button class="btn-add" onclick="openModal()">+ Agregar Empleado</button>
+        </div>
+
+        <div class="staff-grid" id="staff-grid">
+            <div class="empty-state"><p>⏳ Cargando equipo...</p></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this) closeModal()">
+        <div class="modal">
+            <h3 id="modal-title">Agregar Empleado</h3>
+            <form onsubmit="saveStaff(event)">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label class="form-label">Nombre *</label>
+                    <input type="text" class="form-input" id="staff-name" placeholder="Ej: Daniela Torres" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="staff-email" placeholder="daniela@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono</label>
+                    <input type="tel" class="form-input" id="staff-phone" placeholder="+56 9 1234 5678">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rol / Especialidad</label>
+                    <input type="text" class="form-input" id="staff-bio" placeholder="Ej: Estilista Senior, Colorista...">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-save" id="save-btn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/db.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <script>
+        let business = null;
+        let staffList = [];
+
+        (async () => {
+            const user = await Auth.requireAuth('/login/');
+            if (!user) return;
+            const { data: biz } = await DB.businesses.getMine();
+            if (!biz) { window.location.href = '/registro/'; return; }
+            business = biz;
+            await loadStaff();
+        })();
+
+        async function loadStaff() {
+            const { data } = await DB.staff.getByBusiness(business.id, false);
+            staffList = data || [];
+            renderStaff();
+        }
+
+        function renderStaff() {
+            const container = document.getElementById('staff-grid');
+            if (staffList.length === 0) {
+                container.innerHTML = `<div class="empty-state"><p style="font-size:2rem;">👩‍💼</p><p>No hay empleados aún.</p></div>`;
+                return;
+            }
+            container.innerHTML = staffList.map(s => `
+                <div class="staff-card">
+                    <div class="staff-avatar">${s.display_name.charAt(0).toUpperCase()}</div>
+                    <div class="staff-name">${s.display_name}</div>
+                    <div class="staff-role">${s.bio || s.role || 'Staff'}</div>
+                    ${s.email ? `<div class="staff-email">📧 ${s.email}</div>` : ''}
+                    ${s.role === 'owner' ? '<span class="badge-owner">👑 Owner</span>' : ''}
+                    ${s.role !== 'owner' ? `
+                        <div class="staff-actions">
+                            <button class="action-btn" onclick="editStaff('${s.id}')">✏️ Editar</button>
+                            <button class="action-btn delete" onclick="deleteStaff('${s.id}', '${s.display_name}')">🗑️</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function openModal(editId = null) {
+            document.getElementById('modal-overlay').classList.add('show');
+            document.getElementById('edit-id').value = editId || '';
+            document.getElementById('modal-title').textContent = editId ? 'Editar Empleado' : 'Agregar Empleado';
+            if (editId) {
+                const s = staffList.find(x => x.id === editId);
+                if (s) {
+                    document.getElementById('staff-name').value = s.display_name;
+                    document.getElementById('staff-email').value = s.email || '';
+                    document.getElementById('staff-phone').value = s.phone || '';
+                    document.getElementById('staff-bio').value = s.bio || '';
+                }
+            } else {
+                document.getElementById('staff-name').value = '';
+                document.getElementById('staff-email').value = '';
+                document.getElementById('staff-phone').value = '';
+                document.getElementById('staff-bio').value = '';
+            }
+        }
+
+        function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+
+        async function saveStaff(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-id').value;
+            const display_name = document.getElementById('staff-name').value.trim();
+            const email = document.getElementById('staff-email').value.trim();
+            const phone = document.getElementById('staff-phone').value.trim();
+            const bio = document.getElementById('staff-bio').value.trim();
+
+            if (!display_name) { Utils.toast('Ingresa un nombre', 'error'); return; }
+
+            const btn = document.getElementById('save-btn');
+            btn.textContent = 'Guardando...'; btn.disabled = true;
+
+            if (editId) {
+                const { error } = await sb.from('staff').update({ display_name, email: email || null, phone: phone || null, bio: bio || null }).eq('id', editId);
+                if (error) Utils.toast('Error: ' + error.message, 'error');
+                else Utils.toast('Empleado actualizado ✓', 'success');
+            } else {
+                const { error } = await DB.staff.create(business.id, { display_name, email: email || null, phone: phone || null, bio: bio || null });
+                if (error) Utils.toast('Error: ' + error, 'error');
+                else Utils.toast('Empleado agregado ✓', 'success');
+            }
+
+            btn.textContent = 'Guardar'; btn.disabled = false;
+            closeModal();
+            await loadStaff();
+        }
+
+        function editStaff(id) { openModal(id); }
+
+        async function deleteStaff(id, name) {
+            if (!confirm(`¿Eliminar a "${name}" del equipo?`)) return;
+            await sb.from('staff').update({ is_active: false }).eq('id', id);
+            Utils.toast('Empleado eliminado', 'success');
+            await loadStaff();
+        }
+    </script>
+</body>
+</html>

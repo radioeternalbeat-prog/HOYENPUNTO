@@ -852,24 +852,20 @@
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">Principal</div>
-                <a class="nav-item active" onclick="showSection('dashboard')">
+                <a class="nav-item active" href="/dashboard/">
                     <span class="nav-item-icon">📊</span>
                     Dashboard
                 </a>
-                <a class="nav-item" onclick="showSection('calendar')">
-                    <span class="nav-item-icon">📅</span>
-                    Calendario
-                </a>
-                <a class="nav-item" onclick="showSection('bookings')">
+                <a class="nav-item" href="/dashboard/reservas.html">
                     <span class="nav-item-icon">📋</span>
                     Reservas
-                    <span class="nav-item-badge">3</span>
+                    <span class="nav-item-badge" id="badge-reservas"></span>
                 </a>
             </div>
 
             <div class="nav-section">
                 <div class="nav-section-title">Gestión</div>
-                <a class="nav-item" onclick="showSection('clients')">
+                <a class="nav-item" href="/dashboard/clientes.html">
                     <span class="nav-item-icon">👥</span>
                     Clientes
                 </a>
@@ -877,7 +873,7 @@
                     <span class="nav-item-icon">💼</span>
                     Servicios
                 </a>
-                <a class="nav-item" onclick="showSection('staff')">
+                <a class="nav-item" href="/dashboard/equipo.html">
                     <span class="nav-item-icon">👩‍💼</span>
                     Equipo
                 </a>
@@ -885,19 +881,19 @@
 
             <div class="nav-section">
                 <div class="nav-section-title">Configuración</div>
-                <a class="nav-item" onclick="showSection('schedule')">
+                <a class="nav-item" onclick="Utils.toast('Horarios — próximamente', 'info')">
                     <span class="nav-item-icon">🕒</span>
                     Horarios
                 </a>
-                <a class="nav-item" onclick="showSection('notifications')">
+                <a class="nav-item" onclick="Utils.toast('Notificaciones — próximamente', 'info')">
                     <span class="nav-item-icon">🔔</span>
                     Notificaciones
                 </a>
-                <a class="nav-item" onclick="showSection('branding')">
+                <a class="nav-item" onclick="Utils.toast('Mi Marca — próximamente', 'info')">
                     <span class="nav-item-icon">🎨</span>
                     Mi Marca
                 </a>
-                <a class="nav-item" href="/reservar/" target="_blank">
+                <a class="nav-item" onclick="if(business) window.open('/reservar/?slug='+business.slug, '_blank')">
                     <span class="nav-item-icon">🔗</span>
                     Ver Portal Público
                 </a>
@@ -985,14 +981,15 @@
                 <div class="calendar-card">
                     <div class="calendar-toolbar">
                         <div class="calendar-toolbar-left">
-                            <h3>Jueves 27 de Agosto</h3>
-                            <button class="cal-nav-btn">‹</button>
-                            <button class="cal-nav-btn">›</button>
+                            <h3 id="calendar-date-title">Cargando...</h3>
+                            <button class="cal-nav-btn" onclick="navigateDay(-1)">‹</button>
+                            <button class="cal-nav-btn" onclick="navigateDay(1)">›</button>
+                            <button class="cal-nav-btn" onclick="goToToday()" style="font-size: 0.7rem; width: auto; padding: 0 10px;">Hoy</button>
                         </div>
                         <div class="calendar-views">
                             <button class="cal-view-btn active">Día</button>
-                            <button class="cal-view-btn">Semana</button>
-                            <button class="cal-view-btn">Mes</button>
+                            <button class="cal-view-btn" onclick="Utils.toast('Vista semanal próximamente', 'info')">Semana</button>
+                            <button class="cal-view-btn" onclick="Utils.toast('Vista mensual próximamente', 'info')">Mes</button>
                         </div>
                     </div>
 
@@ -1013,7 +1010,7 @@
                     <div class="panel-card">
                         <div class="panel-card-header">
                             <span class="panel-card-title">Próximas Citas</span>
-                            <span class="panel-card-action">Ver todas</span>
+                            <span class="panel-card-action" onclick="window.location.href='/dashboard/reservas.html'">Ver todas</span>
                         </div>
                         <div class="upcoming-list" id="upcoming-list">
                             <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
@@ -1036,13 +1033,13 @@
                                 <span class="quick-action-icon">🔗</span>
                                 <span class="quick-action-label">Copiar Link</span>
                             </a>
-                            <a class="quick-action-btn">
-                                <span class="quick-action-icon">🚫</span>
-                                <span class="quick-action-label">Bloquear Hora</span>
+                            <a class="quick-action-btn" href="/dashboard/reservas.html">
+                                <span class="quick-action-icon">📋</span>
+                                <span class="quick-action-label">Ver Reservas</span>
                             </a>
-                            <a class="quick-action-btn">
+                            <a class="quick-action-btn" href="/dashboard/clientes.html">
                                 <span class="quick-action-icon">👤</span>
-                                <span class="quick-action-label">Nuevo Cliente</span>
+                                <span class="quick-action-label">Ver Clientes</span>
                             </a>
                         </div>
                     </div>
@@ -1079,6 +1076,7 @@
     <script>
         // ===== STATE =====
         let business = null;
+        let currentDate = new Date(); // For calendar navigation
 
         // ===== INIT: Auth Guard + Load Data =====
         (async () => {
@@ -1088,7 +1086,6 @@
             // Load business
             const { data: biz, error } = await DB.businesses.getMine();
             if (!biz) {
-                // User exists but no business yet → onboarding
                 window.location.href = '/registro/';
                 return;
             }
@@ -1099,14 +1096,33 @@
             document.getElementById('topbar-subtitle').textContent = `${Utils.formatDate(new Date(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} — ${biz.name}`;
             document.getElementById('sidebar-user-name').textContent = user.email.split('@')[0];
             document.getElementById('sidebar-user-plan').textContent = `Plan ${biz.plan.charAt(0).toUpperCase() + biz.plan.slice(1)} ⚡`;
-            document.getElementById('link-box-url').textContent = `hoyenpunto.com/${biz.slug}`;
+            document.getElementById('link-box-url').textContent = `hoyenpunto.netlify.app/reservar/?slug=${biz.slug}`;
 
             // Load stats
             await loadStats();
 
             // Load today's bookings
-            await loadTodayBookings();
+            updateCalendarTitle();
+            await loadDayBookings();
         })();
+
+        // ===== CALENDAR NAVIGATION =====
+        function updateCalendarTitle() {
+            const title = currentDate.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' });
+            document.getElementById('calendar-date-title').textContent = title.charAt(0).toUpperCase() + title.slice(1);
+        }
+
+        function navigateDay(delta) {
+            currentDate.setDate(currentDate.getDate() + delta);
+            updateCalendarTitle();
+            loadDayBookings();
+        }
+
+        function goToToday() {
+            currentDate = new Date();
+            updateCalendarTitle();
+            loadDayBookings();
+        }
 
         // ===== LOAD STATS =====
         async function loadStats() {
@@ -1118,10 +1134,10 @@
             document.getElementById('stat-noshow').textContent = stats.noShowRate + '%';
         }
 
-        // ===== LOAD TODAY'S BOOKINGS =====
-        async function loadTodayBookings() {
-            const today = Utils.today();
-            const { data: bookings } = await DB.bookings.getByBusiness(business.id, { date: today });
+        // ===== LOAD DAY'S BOOKINGS =====
+        async function loadDayBookings() {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            const { data: bookings } = await DB.bookings.getByBusiness(business.id, { date: dateStr });
 
             // Update calendar view
             const timeGrid = document.getElementById('time-grid');
@@ -1218,7 +1234,7 @@
             }
 
             Utils.toast(`Cita ${newStatus === 'confirmed' ? 'confirmada' : newStatus === 'completed' ? 'completada' : newStatus === 'cancelled' ? 'cancelada' : 'marcada no-show'} ✓`, 'success');
-            await loadTodayBookings();
+            await loadDayBookings();
             await loadStats();
         }
 
@@ -1236,15 +1252,6 @@
         // ===== SIDEBAR NAVIGATION =====
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
-        }
-
-        function showSection(section) {
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            
-            if (section !== 'dashboard') {
-                Utils.toast(`Sección "${section}" — próximamente`, 'info');
-            }
         }
 
         // ===== SIGN OUT =====
