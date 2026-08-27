@@ -12,19 +12,20 @@ const SUPABASE_URL = 'https://kbdmkpkvfuooaxeprgcz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtiZG1rcGt2ZnVvb2F4ZXByZ2N6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4MzkyODgsImV4cCI6MjEwMzQxNTI4OH0.81n10GmyAeD9a7CMRmMCDSdVRQwinU517wC0UvI-ntM';
 
 // ===== INICIALIZAR CLIENTE =====
-// Supabase UMD bundle expone window.supabase con createClient
+// unpkg.com/@supabase/supabase-js@2 expone window.supabase.createClient
 let supabase;
-try {
-    // El UMD bundle de @supabase/supabase-js expone window.supabase
-    const { createClient } = window.supabase || window.Supabase || {};
-    if (createClient) {
-        supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log('[HoyEnPunto] ✅ Supabase conectado:', SUPABASE_URL);
-    } else {
-        console.error('[HoyEnPunto] ❌ Supabase SDK no encontrado. window.supabase =', window.supabase);
-    }
-} catch(e) {
-    console.error('[HoyEnPunto] ❌ Error inicializando Supabase:', e.message);
+if (window.supabase && typeof window.supabase.createClient === 'function') {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('[HoyEnPunto] ✅ Supabase conectado');
+} else {
+    console.error('[HoyEnPunto] ❌ Supabase SDK no encontrado. window.supabase =', typeof window.supabase, window.supabase);
+    // Intento alternativo: a veces el SDK se carga async
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.supabase && typeof window.supabase.createClient === 'function' && !supabase) {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('[HoyEnPunto] ✅ Supabase conectado (deferred)');
+        }
+    });
 }
 
 // ===== DEBUG MODE =====
