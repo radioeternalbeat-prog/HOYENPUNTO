@@ -23,11 +23,14 @@ HoyEnPunto es una solución integral que permite a negocios locales y profesiona
 
 | Capa | Tecnología |
 |------|-----------|
-| Frontend | Next.js 14 + TypeScript + Tailwind CSS + shadcn/ui |
-| Backend | NestJS + Prisma + BullMQ + Socket.io |
-| Base de Datos | PostgreSQL 16 + Redis |
-| Infraestructura | Netlify (Frontend) + Railway (API) |
-| Monorepo | Turborepo |
+| Frontend | HTML estático + JavaScript vanilla + CSS |
+| UI Framework | Ninguno (CSS custom con glassmorphism McLaren theme) |
+| Backend | Supabase (PostgreSQL + Auth + RLS + Edge Functions) |
+| Base de Datos | PostgreSQL 16 (via Supabase) |
+| Motor de Reservas | Función SQL `get_available_slots()` + `create_booking()` RPC |
+| Anti-dobles | EXCLUDE constraint con GiST + transacciones SERIALIZABLE |
+| Hosting | Netlify (frontend) + Supabase (backend) |
+| CDN | Supabase JS SDK via jsDelivr CDN |
 
 ---
 
@@ -35,13 +38,26 @@ HoyEnPunto es una solución integral que permite a negocios locales y profesiona
 
 ```
 HOYENPUNTO/
-├── docs/                      # Documentación del proyecto
+├── docs/                      # Documentación del producto
 │   └── PRD-HoyEnPunto-MVP.md # Especificación de requerimientos
-├── landing/                   # Landing page pública (Netlify)
-│   ├── index.html
-│   ├── styles.css
+├── supabase/                  # Backend (Database + Auth)
+│   ├── schema.sql            # Schema completo (tablas, RLS, funciones)
+│   └── seed.sql              # Datos de prueba
+├── landing/                   # Frontend (Netlify)
+│   ├── index.html            # Landing page pública
+│   ├── styles.css            # Estilos McLaren theme
+│   ├── js/                   # Módulos JavaScript
+│   │   ├── supabase-config.js  # Configuración Supabase
+│   │   ├── auth.js             # Autenticación
+│   │   ├── db.js               # CRUD de datos
+│   │   ├── availability.js     # Motor de disponibilidad
+│   │   └── utils.js            # Helpers
+│   ├── reservar/             # Portal de reservas (B2C dinámico)
+│   ├── dashboard/            # Panel de control (B2B protegido)
+│   ├── registro/             # Onboarding wizard
 │   └── assets/
 ├── netlify.toml               # Configuración de despliegue
+├── SETUP.md                   # 🛠️ Guía de instalación paso a paso
 └── README.md
 ```
 
@@ -51,7 +67,13 @@ HOYENPUNTO/
 
 La landing page se despliega automáticamente en **Netlify** con cada push a `main`.
 
-**URL de producción:** *(pendiente configuración)*
+**Guía completa de instalación:** [SETUP.md](./SETUP.md)
+
+### Quick Start:
+1. Crea un proyecto en [Supabase](https://supabase.com)
+2. Ejecuta `supabase/schema.sql` en el SQL Editor
+3. Edita `landing/js/supabase-config.js` con tus credenciales
+4. Push a GitHub → Netlify despliega automáticamente
 
 ---
 

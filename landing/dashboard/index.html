@@ -905,11 +905,11 @@
         </nav>
 
         <div class="sidebar-footer">
-            <div class="sidebar-user">
-                <div class="sidebar-user-avatar">CM</div>
+            <div class="sidebar-user" onclick="signOut()" style="cursor: pointer;" title="Cerrar sesión">
+                <div class="sidebar-user-avatar">👤</div>
                 <div class="sidebar-user-info">
-                    <div class="sidebar-user-name">Carolina Méndez</div>
-                    <div class="sidebar-user-plan">Plan Professional ⚡</div>
+                    <div class="sidebar-user-name" id="sidebar-user-name">...</div>
+                    <div class="sidebar-user-plan" id="sidebar-user-plan">Cargando...</div>
                 </div>
             </div>
         </div>
@@ -923,8 +923,8 @@
             <div class="topbar-left">
                 <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
                 <div>
-                    <h1 class="topbar-title">Buenos días, Carolina 👋</h1>
-                    <p class="topbar-subtitle">Jueves 27 de agosto, 2026 — Estilo Carolina</p>
+                    <h1 class="topbar-title" id="topbar-greeting">Cargando... 👋</h1>
+                    <p class="topbar-subtitle" id="topbar-subtitle">—</p>
                 </div>
             </div>
             <div class="topbar-right">
@@ -933,7 +933,7 @@
                     <span class="badge">3</span>
                 </button>
                 <button class="topbar-btn" title="Compartir enlace" onclick="copyLink()">🔗</button>
-                <button class="btn-new-booking" onclick="window.open('/reservar/', '_blank')">
+                <button class="btn-new-booking" onclick="if(business) window.open('/reservar/?slug='+business.slug, '_blank')">
                     + Nueva Reserva
                 </button>
             </div>
@@ -949,32 +949,32 @@
                         <span class="stat-card-label">Citas Hoy</span>
                         <div class="stat-card-icon orange">📅</div>
                     </div>
-                    <div class="stat-card-value">8</div>
-                    <div class="stat-card-change up">↑ 2 más que ayer</div>
+                    <div class="stat-card-value" id="stat-today">—</div>
+                    <div class="stat-card-change up">cargando...</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-card-header">
                         <span class="stat-card-label">Reservas esta Semana</span>
                         <div class="stat-card-icon green">📈</div>
                     </div>
-                    <div class="stat-card-value">34</div>
-                    <div class="stat-card-change up">↑ 12% vs semana anterior</div>
+                    <div class="stat-card-value" id="stat-week">—</div>
+                    <div class="stat-card-change up">últimos 7 días</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-card-header">
                         <span class="stat-card-label">Nuevos Clientes</span>
                         <div class="stat-card-icon volt">👥</div>
                     </div>
-                    <div class="stat-card-value">5</div>
-                    <div class="stat-card-change up">↑ Este mes: 18 nuevos</div>
+                    <div class="stat-card-value" id="stat-clients">—</div>
+                    <div class="stat-card-change up">este mes</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-card-header">
                         <span class="stat-card-label">Tasa No-Show</span>
                         <div class="stat-card-icon red">📉</div>
                     </div>
-                    <div class="stat-card-value">4%</div>
-                    <div class="stat-card-change up">↓ Era 18% antes de HoyEnPunto</div>
+                    <div class="stat-card-value" id="stat-noshow">—</div>
+                    <div class="stat-card-change up">últimos 30 días</div>
                 </div>
             </div>
 
@@ -997,106 +997,10 @@
                     </div>
 
                     <div class="calendar-day-view">
-                        <div class="time-grid">
-                            <div class="time-row">
-                                <div class="time-label">09:00</div>
-                                <div class="time-content">
-                                    <div class="booking-block confirmed">
-                                        <div class="booking-block-name">María López</div>
-                                        <div class="booking-block-service">Corte + Color — Daniela T.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="time-row">
-                                <div class="time-label">10:00</div>
-                                <div class="time-content">
-                                    <div class="booking-block completed">
-                                        <div class="booking-block-name">Pedro Soto</div>
-                                        <div class="booking-block-service">Perfilado de Barba — Carolina M.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="time-row">
-                                <div class="time-label">10:30</div>
-                                <div class="time-content">
-                                    <div class="booking-block confirmed">
-                                        <div class="booking-block-name">Ana Ruiz</div>
-                                        <div class="booking-block-service">Manicure Semipermanente — Valentina R.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="time-row">
-                                <div class="time-label">11:00</div>
-                                <div class="time-content">
-                                    <div class="time-now" style="top: 50%;"></div>
-                                </div>
-                            </div>
-                            <div class="time-row">
-                                <div class="time-label">11:30</div>
-                                <div class="time-content">
-                                    <div class="booking-block pending">
-                                        <div class="booking-block-name">Camila Vega</div>
-                                        <div class="booking-block-service">Brushing + Tratamiento — Daniela T.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="time-row">
-                                <div class="time-label">12:00</div>
-                                <div class="time-content"></div>
-                            </div>
-                            <div class="time-row">
-                                <div class="time-label">12:30</div>
-                                <div class="time-content"></div>
-                            </div>
-                            <div class="time-row lunch-break">
-                                <div class="time-label" style="color: var(--text-dim);">13:00</div>
-                                <div class="time-content" style="display: flex; align-items: center; font-size: 0.75rem; color: var(--text-dim);">
-                                    🍽️ Almuerzo
-                                </div>
-                            </div>
-                            <div class="time-row">
-                                <div class="time-label">14:00</div>
-                                <div class="time-content">
-                                    <div class="booking-block confirmed">
-                                        <div class="booking-block-name">Martín Rojas</div>
-                                        <div class="booking-block-service">Corte Degradé — Carolina M.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="time-row">
-                                <div class="time-label">15:00</div>
-                                <div class="time-content">
-                                    <div class="booking-block confirmed">
-                                        <div class="booking-block-name">Lucía Fernández</div>
-                                        <div class="booking-block-service">Coloración Completa — Valentina R.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="time-row">
-                                <div class="time-label">16:00</div>
-                                <div class="time-content"></div>
-                            </div>
-                            <div class="time-row">
-                                <div class="time-label">16:30</div>
-                                <div class="time-content">
-                                    <div class="booking-block pending">
-                                        <div class="booking-block-name">Roberto Díaz</div>
-                                        <div class="booking-block-service">Corte + Barba — Carolina M.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="time-row">
-                                <div class="time-label">17:30</div>
-                                <div class="time-content">
-                                    <div class="booking-block confirmed">
-                                        <div class="booking-block-name">Sofía Morales</div>
-                                        <div class="booking-block-service">Manicure + Pedicure — Valentina R.</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="time-row">
-                                <div class="time-label">18:30</div>
-                                <div class="time-content"></div>
+                        <div class="time-grid" id="time-grid">
+                            <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+                                <p style="font-size: 1.2rem;">⏳</p>
+                                <p style="font-size: 0.85rem;">Cargando citas...</p>
                             </div>
                         </div>
                     </div>
@@ -1111,66 +1015,9 @@
                             <span class="panel-card-title">Próximas Citas</span>
                             <span class="panel-card-action">Ver todas</span>
                         </div>
-                        <div class="upcoming-list">
-                            <div class="upcoming-item">
-                                <div class="upcoming-time">
-                                    <div class="upcoming-time-hour">11:30</div>
-                                    <div class="upcoming-time-period">AM</div>
-                                </div>
-                                <div class="upcoming-divider pending"></div>
-                                <div class="upcoming-info">
-                                    <div class="upcoming-client">Camila Vega</div>
-                                    <div class="upcoming-service">Brushing + Tratamiento</div>
-                                </div>
-                                <span class="upcoming-status status-pending">Pendiente</span>
-                            </div>
-                            <div class="upcoming-item">
-                                <div class="upcoming-time">
-                                    <div class="upcoming-time-hour">14:00</div>
-                                    <div class="upcoming-time-period">PM</div>
-                                </div>
-                                <div class="upcoming-divider"></div>
-                                <div class="upcoming-info">
-                                    <div class="upcoming-client">Martín Rojas</div>
-                                    <div class="upcoming-service">Corte Degradé</div>
-                                </div>
-                                <span class="upcoming-status status-confirmed">Confirmada</span>
-                            </div>
-                            <div class="upcoming-item">
-                                <div class="upcoming-time">
-                                    <div class="upcoming-time-hour">15:00</div>
-                                    <div class="upcoming-time-period">PM</div>
-                                </div>
-                                <div class="upcoming-divider"></div>
-                                <div class="upcoming-info">
-                                    <div class="upcoming-client">Lucía Fernández</div>
-                                    <div class="upcoming-service">Coloración Completa</div>
-                                </div>
-                                <span class="upcoming-status status-confirmed">Confirmada</span>
-                            </div>
-                            <div class="upcoming-item">
-                                <div class="upcoming-time">
-                                    <div class="upcoming-time-hour">16:30</div>
-                                    <div class="upcoming-time-period">PM</div>
-                                </div>
-                                <div class="upcoming-divider pending"></div>
-                                <div class="upcoming-info">
-                                    <div class="upcoming-client">Roberto Díaz</div>
-                                    <div class="upcoming-service">Corte + Barba</div>
-                                </div>
-                                <span class="upcoming-status status-pending">Pendiente</span>
-                            </div>
-                            <div class="upcoming-item">
-                                <div class="upcoming-time">
-                                    <div class="upcoming-time-hour">17:30</div>
-                                    <div class="upcoming-time-period">PM</div>
-                                </div>
-                                <div class="upcoming-divider"></div>
-                                <div class="upcoming-info">
-                                    <div class="upcoming-client">Sofía Morales</div>
-                                    <div class="upcoming-service">Manicure + Pedicure</div>
-                                </div>
-                                <span class="upcoming-status status-confirmed">Confirmada</span>
+                        <div class="upcoming-list" id="upcoming-list">
+                            <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                                Cargando...
                             </div>
                         </div>
                     </div>
@@ -1181,7 +1028,7 @@
                             <span class="panel-card-title">Acciones Rápidas</span>
                         </div>
                         <div class="quick-actions">
-                            <a class="quick-action-btn" href="/reservar/" target="_blank">
+                            <a class="quick-action-btn" onclick="if(business) window.open('/reservar/?slug='+business.slug, '_blank')">
                                 <span class="quick-action-icon">➕</span>
                                 <span class="quick-action-label">Nueva Cita</span>
                             </a>
@@ -1207,7 +1054,7 @@
                         </div>
                         <div style="padding: 16px;">
                             <div class="link-box">
-                                <span class="link-box-url">hoyenpunto.com/estilo-carolina</span>
+                                <span class="link-box-url" id="link-box-url">cargando...</span>
                                 <button class="link-box-btn" onclick="copyLink()">Copiar</button>
                             </div>
                             <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 8px; text-align: center;">
@@ -1221,30 +1068,188 @@
         </section>
     </main>
 
+    <!-- Supabase SDK + HoyEnPunto Modules -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/db.js"></script>
+    <script src="/js/availability.js"></script>
+    <script src="/js/utils.js"></script>
+
     <script>
-        // Toggle sidebar (mobile)
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
+        // ===== STATE =====
+        let business = null;
+
+        // ===== INIT: Auth Guard + Load Data =====
+        (async () => {
+            const user = await Auth.requireAuth('/registro/');
+            if (!user) return;
+
+            // Load business
+            const { data: biz, error } = await DB.businesses.getMine();
+            if (!biz) {
+                // User exists but no business yet → onboarding
+                window.location.href = '/registro/';
+                return;
+            }
+            business = biz;
+
+            // Update UI with business info
+            document.getElementById('topbar-greeting').textContent = `Buenos días, ${biz.name.split(' ')[0]} 👋`;
+            document.getElementById('topbar-subtitle').textContent = `${Utils.formatDate(new Date(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} — ${biz.name}`;
+            document.getElementById('sidebar-user-name').textContent = user.email.split('@')[0];
+            document.getElementById('sidebar-user-plan').textContent = `Plan ${biz.plan.charAt(0).toUpperCase() + biz.plan.slice(1)} ⚡`;
+            document.getElementById('link-box-url').textContent = `hoyenpunto.com/${biz.slug}`;
+
+            // Load stats
+            await loadStats();
+
+            // Load today's bookings
+            await loadTodayBookings();
+        })();
+
+        // ===== LOAD STATS =====
+        async function loadStats() {
+            const stats = await DB.bookings.getStats(business.id);
+            
+            document.getElementById('stat-today').textContent = stats.todayBookings;
+            document.getElementById('stat-week').textContent = stats.weekBookings;
+            document.getElementById('stat-clients').textContent = stats.newClients;
+            document.getElementById('stat-noshow').textContent = stats.noShowRate + '%';
         }
 
-        // Copy booking link
+        // ===== LOAD TODAY'S BOOKINGS =====
+        async function loadTodayBookings() {
+            const today = Utils.today();
+            const { data: bookings } = await DB.bookings.getByBusiness(business.id, { date: today });
+
+            // Update calendar view
+            const timeGrid = document.getElementById('time-grid');
+            timeGrid.innerHTML = '';
+
+            if (bookings.length === 0) {
+                timeGrid.innerHTML = `
+                    <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+                        <p style="font-size: 1.5rem; margin-bottom: 8px;">📅</p>
+                        <p>No hay citas para hoy</p>
+                        <p style="font-size: 0.8rem; margin-top: 8px;">Comparte tu enlace para recibir reservas</p>
+                    </div>
+                `;
+            } else {
+                bookings.forEach(booking => {
+                    const startTime = new Date(booking.start_time);
+                    const timeStr = startTime.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+                    const statusClass = booking.status === 'confirmed' ? 'confirmed' : 
+                                       booking.status === 'pending' ? 'pending' : 
+                                       booking.status === 'completed' ? 'completed' : 'confirmed';
+                    
+                    const row = document.createElement('div');
+                    row.className = 'time-row';
+                    row.innerHTML = `
+                        <div class="time-label">${timeStr}</div>
+                        <div class="time-content">
+                            <div class="booking-block ${statusClass}" onclick="showBookingActions('${booking.id}', '${booking.status}')">
+                                <div class="booking-block-name">${booking.customer?.name || 'Cliente'}</div>
+                                <div class="booking-block-service">${booking.service?.name || 'Servicio'} — ${booking.staff_member?.display_name || ''}</div>
+                            </div>
+                        </div>
+                    `;
+                    timeGrid.appendChild(row);
+                });
+            }
+
+            // Update upcoming list
+            const upcomingList = document.getElementById('upcoming-list');
+            upcomingList.innerHTML = '';
+
+            const now = new Date();
+            const upcoming = bookings.filter(b => new Date(b.start_time) > now && b.status !== 'cancelled');
+
+            if (upcoming.length === 0) {
+                upcomingList.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                        No hay más citas por hoy
+                    </div>
+                `;
+            } else {
+                upcoming.slice(0, 5).forEach(booking => {
+                    const startTime = new Date(booking.start_time);
+                    const hour = startTime.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+                    const period = startTime.getHours() < 12 ? 'AM' : 'PM';
+                    const statusClass = booking.status === 'confirmed' ? 'status-confirmed' : 'status-pending';
+                    const statusText = booking.status === 'confirmed' ? 'Confirmada' : 'Pendiente';
+                    const dividerClass = booking.status === 'pending' ? 'pending' : '';
+
+                    const item = document.createElement('div');
+                    item.className = 'upcoming-item';
+                    item.innerHTML = `
+                        <div class="upcoming-time">
+                            <div class="upcoming-time-hour">${hour}</div>
+                            <div class="upcoming-time-period">${period}</div>
+                        </div>
+                        <div class="upcoming-divider ${dividerClass}"></div>
+                        <div class="upcoming-info">
+                            <div class="upcoming-client">${booking.customer?.name || 'Cliente'}</div>
+                            <div class="upcoming-service">${booking.service?.name || 'Servicio'}</div>
+                        </div>
+                        <span class="upcoming-status ${statusClass}">${statusText}</span>
+                    `;
+                    upcomingList.appendChild(item);
+                });
+            }
+        }
+
+        // ===== BOOKING ACTIONS =====
+        async function showBookingActions(bookingId, currentStatus) {
+            const actions = ['Confirmar', 'Completar', 'Cancelar', 'Marcar No-Show'];
+            const choice = prompt(`Cita ID: ${bookingId.substring(0,8)}...\nEstado actual: ${currentStatus}\n\nAcciones:\n1. Confirmar\n2. Completar\n3. Cancelar\n4. Marcar No-Show\n\nEscribe el número:`);
+            
+            if (!choice) return;
+
+            const statusMap = { '1': 'confirmed', '2': 'completed', '3': 'cancelled', '4': 'no_show' };
+            const newStatus = statusMap[choice];
+
+            if (!newStatus) return;
+
+            const { error } = await DB.bookings.updateStatus(bookingId, newStatus);
+            if (error) {
+                Utils.toast('Error: ' + error, 'error');
+                return;
+            }
+
+            Utils.toast(`Cita ${newStatus === 'confirmed' ? 'confirmada' : newStatus === 'completed' ? 'completada' : newStatus === 'cancelled' ? 'cancelada' : 'marcada no-show'} ✓`, 'success');
+            await loadTodayBookings();
+            await loadStats();
+        }
+
+        // ===== COPY LINK =====
         function copyLink() {
-            const url = window.location.origin + '/reservar/';
+            if (!business) return;
+            const url = `${window.location.origin}/reservar/?slug=${business.slug}`;
             navigator.clipboard.writeText(url).then(() => {
-                alert('✓ Enlace copiado: ' + url);
+                Utils.toast('✓ Enlace copiado', 'success');
             }).catch(() => {
                 prompt('Copia este enlace:', url);
             });
         }
 
-        // Section navigation (demo)
+        // ===== SIDEBAR NAVIGATION =====
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
         function showSection(section) {
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             event.currentTarget.classList.add('active');
             
             if (section !== 'dashboard') {
-                alert(`Sección "${section}" — En desarrollo. En el MVP completo, aquí se mostrará la gestión de ${section}.`);
+                Utils.toast(`Sección "${section}" — próximamente`, 'info');
             }
+        }
+
+        // ===== SIGN OUT =====
+        async function signOut() {
+            await Auth.signOut();
         }
 
         // Close sidebar when clicking outside (mobile)

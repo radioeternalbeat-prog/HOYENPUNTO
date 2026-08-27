@@ -1002,7 +1002,7 @@
                     </div>
 
                     <div class="btn-group">
-                        <button class="btn btn-primary" style="width: 100%;" onclick="goToStep(1)">Crear Cuenta y Continuar →</button>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="createAccount()">Crear Cuenta y Continuar →</button>
                     </div>
 
                     <p class="login-link">
@@ -1063,7 +1063,7 @@
 
                     <div class="btn-group">
                         <button class="btn btn-secondary btn-back" onclick="goToStep(0)">← Atrás</button>
-                        <button class="btn btn-primary" onclick="goToStep(2)">Siguiente →</button>
+                        <button class="btn btn-primary" onclick="saveBusiness()">Siguiente →</button>
                     </div>
                 </div>
 
@@ -1081,7 +1081,7 @@
 
                     <div class="btn-group">
                         <button class="btn btn-secondary btn-back" onclick="goToStep(1)">← Atrás</button>
-                        <button class="btn btn-primary" onclick="goToStep(3)">Siguiente →</button>
+                        <button class="btn btn-primary" onclick="saveSchedules()">Siguiente →</button>
                     </div>
                 </div>
 
@@ -1094,14 +1094,7 @@
                     </div>
 
                     <div class="services-added" id="services-added">
-                        <div class="service-added-item">
-                            <span class="service-added-icon">✂️</span>
-                            <div class="service-added-info">
-                                <div class="service-added-name">Corte de Cabello</div>
-                                <div class="service-added-meta">45 min — $15.000</div>
-                            </div>
-                            <button class="service-added-remove" onclick="this.parentElement.remove()">✕</button>
-                        </div>
+                        <!-- Services will be added dynamically -->
                     </div>
 
                     <div id="add-service-form" class="add-service-form hidden">
@@ -1128,7 +1121,7 @@
 
                     <div class="btn-group">
                         <button class="btn btn-secondary btn-back" onclick="goToStep(2)">← Atrás</button>
-                        <button class="btn btn-primary" onclick="goToStep(4)">Siguiente →</button>
+                        <button class="btn btn-primary" onclick="saveServices()">Siguiente →</button>
                     </div>
                 </div>
 
@@ -1250,7 +1243,7 @@
 
                         <div class="btn-group" style="flex-direction: column; gap: 10px;">
                             <a href="/dashboard/" class="btn btn-primary" style="text-decoration: none; width: 100%;">Ir a mi Panel de Control →</a>
-                            <a href="/reservar/" class="btn btn-secondary" style="text-decoration: none; width: 100%;" target="_blank">Ver mi Portal de Reservas</a>
+                            <a id="portal-link" href="/reservar/?slug=mi-negocio" class="btn btn-secondary" style="text-decoration: none; width: 100%;" target="_blank">Ver mi Portal de Reservas</a>
                         </div>
                     </div>
                 </div>
@@ -1259,9 +1252,33 @@
         </div>
     </div>
 
-    <script>
-        let currentStep = 0;
+    <!-- Supabase SDK + HoyEnPunto Modules -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/db.js"></script>
+    <script src="/js/utils.js"></script>
 
+    <script>
+        // ===== STATE =====
+        let currentStep = 0;
+        let businessId = null; // Set after business creation
+        const servicesAdded = []; // Track services to save
+
+        // ===== CHECK IF ALREADY LOGGED IN =====
+        (async () => {
+            const user = await Auth.getUser();
+            if (user) {
+                // Check if user already has a business
+                const { data: biz } = await DB.businesses.getMine();
+                if (biz) {
+                    // Already onboarded, go to dashboard
+                    window.location.href = '/dashboard/';
+                }
+            }
+        })();
+
+        // ===== STEP NAVIGATION =====
         function goToStep(step) {
             for (let i = 0; i <= 5; i++) {
                 document.getElementById(`step-${i}`).classList.add('hidden');
@@ -1301,23 +1318,118 @@
             if (step === 2) initSchedule();
         }
 
+        // ===== STEP 0: CREATE ACCOUNT (Supabase Auth) =====
+        async function createAccount() {
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const businessName = document.getElementById('reg-business').value.trim();
+
+            // Validation
+            if (!businessName) {
+                Utils.toast('Ingresa el nombre de tu negocio', 'error');
+                return;
+            }
+            if (!Utils.isValidEmail(email)) {
+                Utils.toast('Ingresa un email válido', 'error');
+                return;
+            }
+            if (password.length < 8) {
+                Utils.toast('La contraseña debe tener al menos 8 caracteres', 'error');
+                return;
+            }
+
+            const btn = event.target;
+            Utils.btnLoading(btn, true);
+
+            // Sign up with Supabase Auth
+            const { user, error } = await Auth.signUp(email, password);
+            
+            if (error) {
+                Utils.btnLoading(btn, false);
+                if (error.includes('already registered')) {
+                    Utils.toast('Este email ya está registrado. Intenta iniciar sesión.', 'error');
+                } else {
+                    Utils.toast(error, 'error');
+                }
+                return;
+            }
+
+            // Auto sign-in after registration
+            const { error: signInError } = await Auth.signIn(email, password);
+            if (signInError) {
+                Utils.btnLoading(btn, false);
+                Utils.toast('Cuenta creada. Revisa tu email para confirmar y luego inicia sesión.', 'info');
+                return;
+            }
+
+            Utils.btnLoading(btn, false);
+            Utils.toast('¡Cuenta creada exitosamente!', 'success');
+
+            // Auto-fill slug
+            const slug = Utils.generateSlug(businessName);
+            document.getElementById('biz-slug').value = slug;
+
+            // Move to step 1
+            goToStep(1);
+        }
+
+        // ===== STEP 1: SAVE BUSINESS DATA =====
+        async function saveBusiness() {
+            const btn = event.target;
+            Utils.btnLoading(btn, true);
+
+            const businessName = document.getElementById('reg-business').value.trim();
+            const slug = document.getElementById('biz-slug').value || Utils.generateSlug(businessName);
+
+            // Check slug availability
+            const available = await DB.businesses.isSlugAvailable(slug);
+            if (!available) {
+                Utils.btnLoading(btn, false);
+                Utils.toast('Este slug ya está en uso. Elige otro nombre.', 'error');
+                return;
+            }
+
+            const { data, error } = await DB.businesses.create({
+                name: businessName,
+                slug: slug,
+                category: document.getElementById('biz-category').value,
+                description: document.getElementById('biz-description').value,
+                address: document.getElementById('biz-address').value,
+                phone: document.getElementById('biz-phone').value,
+                timezone: document.getElementById('biz-timezone').value
+            });
+
+            Utils.btnLoading(btn, false);
+
+            if (error) {
+                Utils.toast('Error al crear negocio: ' + error, 'error');
+                return;
+            }
+
+            businessId = data.id;
+            Utils.toast('Datos del negocio guardados ✓', 'success');
+            goToStep(2);
+        }
+
+        // ===== STEP 2: SCHEDULES =====
         function initSchedule() {
             const grid = document.getElementById('schedule-grid');
             if (grid.children.length > 0) return;
 
             const days = [
-                { name: 'Lunes', active: true },
-                { name: 'Martes', active: true },
-                { name: 'Miércoles', active: true },
-                { name: 'Jueves', active: true },
-                { name: 'Viernes', active: true },
-                { name: 'Sábado', active: true },
-                { name: 'Domingo', active: false }
+                { name: 'Lunes', key: 'monday', active: true },
+                { name: 'Martes', key: 'tuesday', active: true },
+                { name: 'Miércoles', key: 'wednesday', active: true },
+                { name: 'Jueves', key: 'thursday', active: true },
+                { name: 'Viernes', key: 'friday', active: true },
+                { name: 'Sábado', key: 'saturday', active: true },
+                { name: 'Domingo', key: 'sunday', active: false }
             ];
 
             days.forEach(day => {
                 const row = document.createElement('div');
                 row.className = 'schedule-row';
+                row.dataset.day = day.key;
                 row.innerHTML = `
                     <span class="schedule-day">${day.name}</span>
                     <div class="schedule-toggle ${day.active ? 'active' : ''}" onclick="this.classList.toggle('active')"></div>
@@ -1331,6 +1443,39 @@
             });
         }
 
+        async function saveSchedules() {
+            const btn = event.target;
+            Utils.btnLoading(btn, true);
+
+            const rows = document.querySelectorAll('.schedule-row');
+            const scheduleData = [];
+
+            rows.forEach(row => {
+                const isActive = row.querySelector('.schedule-toggle').classList.contains('active');
+                const times = row.querySelectorAll('.schedule-time-input');
+                
+                scheduleData.push({
+                    day: row.dataset.day,
+                    start_time: times[0].value + ':00',
+                    end_time: times[1].value + ':00',
+                    is_active: isActive
+                });
+            });
+
+            const { error } = await DB.schedules.saveAll(businessId, scheduleData);
+            
+            Utils.btnLoading(btn, false);
+
+            if (error) {
+                Utils.toast('Error al guardar horarios: ' + error, 'error');
+                return;
+            }
+
+            Utils.toast('Horarios guardados ✓', 'success');
+            goToStep(3);
+        }
+
+        // ===== STEP 3: SERVICES =====
         function toggleServiceForm() {
             const form = document.getElementById('add-service-form');
             const toggle = document.getElementById('add-service-toggle');
@@ -1339,34 +1484,81 @@
         }
 
         function addService() {
-            const name = document.getElementById('new-service-name').value;
+            const name = document.getElementById('new-service-name').value.trim();
             const duration = document.getElementById('new-service-duration').value;
             const price = document.getElementById('new-service-price').value;
 
             if (!name || !duration || !price) {
-                alert('Completa todos los campos del servicio.');
+                Utils.toast('Completa todos los campos del servicio', 'error');
                 return;
             }
+
+            servicesAdded.push({
+                name,
+                duration_minutes: parseInt(duration),
+                price: parseInt(price)
+            });
 
             const container = document.getElementById('services-added');
             const item = document.createElement('div');
             item.className = 'service-added-item';
+            item.dataset.index = servicesAdded.length - 1;
             item.innerHTML = `
                 <span class="service-added-icon">⭐</span>
                 <div class="service-added-info">
                     <div class="service-added-name">${name}</div>
-                    <div class="service-added-meta">${duration} min — $${parseInt(price).toLocaleString('es-CL')}</div>
+                    <div class="service-added-meta">${duration} min — ${Utils.formatPrice(price)}</div>
                 </div>
-                <button class="service-added-remove" onclick="this.parentElement.remove()">✕</button>
+                <button class="service-added-remove" onclick="removeService(this)">✕</button>
             `;
             container.appendChild(item);
 
+            // Reset form
             document.getElementById('new-service-name').value = '';
             document.getElementById('new-service-duration').value = '';
             document.getElementById('new-service-price').value = '';
             toggleServiceForm();
         }
 
+        function removeService(btn) {
+            const item = btn.parentElement;
+            const index = parseInt(item.dataset.index);
+            servicesAdded.splice(index, 1);
+            item.remove();
+        }
+
+        async function saveServices() {
+            if (servicesAdded.length === 0) {
+                Utils.toast('Agrega al menos un servicio', 'error');
+                return;
+            }
+
+            const btn = event.target;
+            Utils.btnLoading(btn, true);
+
+            // Save all services to DB
+            for (let i = 0; i < servicesAdded.length; i++) {
+                const svc = servicesAdded[i];
+                const { error } = await DB.services.create(businessId, {
+                    name: svc.name,
+                    duration_minutes: svc.duration_minutes,
+                    price: svc.price,
+                    sort_order: i + 1
+                });
+
+                if (error) {
+                    Utils.btnLoading(btn, false);
+                    Utils.toast('Error al guardar servicio: ' + error, 'error');
+                    return;
+                }
+            }
+
+            Utils.btnLoading(btn, false);
+            Utils.toast('Servicios guardados ✓', 'success');
+            goToStep(4);
+        }
+
+        // ===== STEP 4: BRANDING =====
         function selectColor(color, element) {
             document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('selected'));
             element.classList.add('selected');
@@ -1380,7 +1572,9 @@
         }
 
         function updateSlug(value) {
-            const slug = value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
+            const slug = value.toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
             document.getElementById('biz-slug').value = slug;
         }
 
@@ -1394,17 +1588,37 @@
             }
         }
 
-        function completeOnboarding() {
+        async function completeOnboarding() {
+            const btn = event.target;
+            Utils.btnLoading(btn, true);
+
             const slug = document.getElementById('biz-slug').value || 'mi-negocio';
+            const color = document.getElementById('color-picker').value;
+
+            // Update business with branding
+            const { error } = await DB.businesses.update(businessId, {
+                slug: slug,
+                primary_color: color
+            });
+
+            Utils.btnLoading(btn, false);
+
+            if (error) {
+                Utils.toast('Error al guardar: ' + error, 'error');
+                return;
+            }
+
+            // Show success
             document.getElementById('final-slug').textContent = slug;
+            Utils.toast('¡Configuración completada! 🎉', 'success');
             goToStep(5);
         }
 
         function copyFinalLink() {
             const slug = document.getElementById('final-slug').textContent;
-            const url = `https://hoyenpunto.com/${slug}`;
+            const url = `${window.location.origin}/reservar/?slug=${slug}`;
             navigator.clipboard.writeText(url).then(() => {
-                alert('✓ Enlace copiado: ' + url);
+                Utils.toast('✓ Enlace copiado', 'success');
             }).catch(() => {
                 prompt('Copia este enlace:', url);
             });

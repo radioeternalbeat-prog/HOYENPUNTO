@@ -684,12 +684,11 @@
 
     <!-- HEADER DEL NEGOCIO (White-Label) -->
     <header class="biz-header">
-        <div class="biz-logo">💇‍♀️</div>
-        <h1 class="biz-name">Estilo Carolina</h1>
-        <p class="biz-category">Salón de Belleza & Estilismo</p>
+        <div class="biz-logo">💼</div>
+        <h1 class="biz-name" id="biz-name">Cargando...</h1>
+        <p class="biz-category" id="biz-category"></p>
         <div class="biz-info">
-            <span>📍 Av. Providencia 1234, Santiago</span>
-            <span>⭐ 4.9 (128 reseñas)</span>
+            <span id="biz-address"></span>
         </div>
     </header>
 
@@ -710,51 +709,9 @@
             <h2 class="card-title">¿Qué servicio necesitas?</h2>
             <p class="card-subtitle">Selecciona uno o más servicios</p>
             
-            <div class="service-list">
-                <div class="service-item" data-service="corte" data-price="15000" data-duration="45">
-                    <div class="service-icon">✂️</div>
-                    <div class="service-info">
-                        <div class="service-name">Corte de Cabello</div>
-                        <div class="service-meta">45 min</div>
-                    </div>
-                    <div class="service-price">$15.000</div>
-                    <div class="service-check">✓</div>
-                </div>
-                <div class="service-item" data-service="color" data-price="35000" data-duration="90">
-                    <div class="service-icon">🎨</div>
-                    <div class="service-info">
-                        <div class="service-name">Coloración Completa</div>
-                        <div class="service-meta">90 min</div>
-                    </div>
-                    <div class="service-price">$35.000</div>
-                    <div class="service-check">✓</div>
-                </div>
-                <div class="service-item" data-service="manicure" data-price="12000" data-duration="30">
-                    <div class="service-icon">💅</div>
-                    <div class="service-info">
-                        <div class="service-name">Manicure Semipermanente</div>
-                        <div class="service-meta">30 min</div>
-                    </div>
-                    <div class="service-price">$12.000</div>
-                    <div class="service-check">✓</div>
-                </div>
-                <div class="service-item" data-service="brushing" data-price="18000" data-duration="40">
-                    <div class="service-icon">💆‍♀️</div>
-                    <div class="service-info">
-                        <div class="service-name">Brushing + Tratamiento</div>
-                        <div class="service-meta">40 min</div>
-                    </div>
-                    <div class="service-price">$18.000</div>
-                    <div class="service-check">✓</div>
-                </div>
-                <div class="service-item" data-service="barba" data-price="8000" data-duration="20">
-                    <div class="service-icon">🧔</div>
-                    <div class="service-info">
-                        <div class="service-name">Perfilado de Barba</div>
-                        <div class="service-meta">20 min</div>
-                    </div>
-                    <div class="service-price">$8.000</div>
-                    <div class="service-check">✓</div>
+            <div class="service-list" id="service-list">
+                <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                    ⏳ Cargando servicios...
                 </div>
             </div>
 
@@ -770,26 +727,9 @@
             <h2 class="card-title">¿Con quién prefieres?</h2>
             <p class="card-subtitle">Elige tu profesional favorito</p>
             
-            <div class="staff-grid">
-                <div class="staff-card" data-staff="carolina" onclick="selectStaff(this)">
-                    <div class="staff-avatar">C</div>
-                    <div class="staff-name">Carolina M.</div>
-                    <div class="staff-role">Directora Creativa</div>
-                </div>
-                <div class="staff-card" data-staff="daniela" onclick="selectStaff(this)">
-                    <div class="staff-avatar">D</div>
-                    <div class="staff-name">Daniela T.</div>
-                    <div class="staff-role">Estilista Senior</div>
-                </div>
-                <div class="staff-card" data-staff="valentina" onclick="selectStaff(this)">
-                    <div class="staff-avatar">V</div>
-                    <div class="staff-name">Valentina R.</div>
-                    <div class="staff-role">Colorista</div>
-                </div>
-                <div class="staff-card" data-staff="any" onclick="selectStaff(this)">
-                    <div class="staff-avatar">🎲</div>
-                    <div class="staff-name">Sin preferencia</div>
-                    <div class="staff-role">Primer disponible</div>
+            <div class="staff-grid" id="staff-grid">
+                <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem; grid-column: 1/-1;">
+                    ⏳ Cargando profesionales...
                 </div>
             </div>
 
@@ -914,14 +854,126 @@
         </div>
     </div>
 
+    <!-- Supabase SDK + HoyEnPunto Modules -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/db.js"></script>
+    <script src="/js/availability.js"></script>
+    <script src="/js/utils.js"></script>
+
     <script>
         // ===== STATE =====
         let currentStep = 1;
+        let business = null;
+        let allServices = [];
+        let allStaff = [];
         let selectedServices = [];
         let selectedStaff = null;
         let selectedDate = null;
         let selectedTime = null;
-        let currentMonth = new Date(2026, 7); // Agosto 2026
+        let currentMonth = new Date();
+        let availableDays = [];
+
+        // ===== INIT: Load business by slug =====
+        (async () => {
+            const params = new URLSearchParams(window.location.search);
+            const slug = params.get('slug');
+
+            if (!slug) {
+                document.querySelector('.booking-container').innerHTML = `
+                    <div style="padding: 60px 20px; text-align: center;">
+                        <p style="font-size: 2rem; margin-bottom: 12px;">🔍</p>
+                        <h2 style="color: var(--text-primary); margin-bottom: 8px;">Negocio no encontrado</h2>
+                        <p style="color: var(--text-muted);">Necesitas un enlace válido para reservar.<br>Ejemplo: /reservar/?slug=mi-negocio</p>
+                        <a href="/" style="color: var(--biz-primary); margin-top: 16px; display: inline-block;">← Volver al inicio</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Load business
+            const { data: biz, error } = await DB.businesses.getBySlug(slug);
+            if (!biz) {
+                document.querySelector('.booking-container').innerHTML = `
+                    <div style="padding: 60px 20px; text-align: center;">
+                        <p style="font-size: 2rem; margin-bottom: 12px;">😕</p>
+                        <h2 style="color: var(--text-primary); margin-bottom: 8px;">Negocio no disponible</h2>
+                        <p style="color: var(--text-muted);">El negocio "${slug}" no existe o no está activo.</p>
+                        <a href="/" style="color: var(--biz-primary); margin-top: 16px; display: inline-block;">← Volver al inicio</a>
+                    </div>
+                `;
+                return;
+            }
+
+            business = biz;
+
+            // Apply business branding
+            applyBranding(biz);
+
+            // Load services
+            const { data: services } = await DB.services.getByBusiness(biz.id);
+            allServices = services;
+            renderServices(services);
+
+            // Load staff
+            const { data: staff } = await DB.staff.getByBusiness(biz.id);
+            allStaff = staff;
+        })();
+
+        // ===== APPLY WHITE-LABEL BRANDING =====
+        function applyBranding(biz) {
+            // Update header
+            document.getElementById('biz-name').textContent = biz.name;
+            document.getElementById('biz-category').textContent = biz.category ? getCategoryLabel(biz.category) : '';
+            document.getElementById('biz-address').textContent = biz.address ? `📍 ${biz.address}` : '';
+
+            // Apply custom color
+            if (biz.primary_color) {
+                document.documentElement.style.setProperty('--biz-primary', biz.primary_color);
+                document.documentElement.style.setProperty('--biz-primary-dark', biz.primary_color);
+                document.documentElement.style.setProperty('--biz-primary-light', biz.primary_color);
+                document.documentElement.style.setProperty('--biz-primary-glow', `0 0 20px ${biz.primary_color}66`);
+                document.querySelector('.biz-header').style.background = `linear-gradient(135deg, ${biz.primary_color} 0%, ${biz.primary_color}cc 100%)`;
+            }
+        }
+
+        function getCategoryLabel(cat) {
+            const labels = {
+                beauty: 'Salón de Belleza & Estilismo',
+                barber: 'Barbería',
+                spa: 'Spa & Estética',
+                dental: 'Clínica Dental',
+                medical: 'Consultorio Médico',
+                psychology: 'Psicología',
+                consulting: 'Consultoría',
+                education: 'Educación',
+                fitness: 'Fitness',
+                automotive: 'Taller Mecánico'
+            };
+            return labels[cat] || cat;
+        }
+
+        // ===== RENDER SERVICES =====
+        function renderServices(services) {
+            const container = document.getElementById('service-list');
+            if (services.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding: 20px;">Este negocio aún no tiene servicios configurados.</p>';
+                return;
+            }
+
+            container.innerHTML = services.map(svc => `
+                <div class="service-item" data-service="${svc.id}" data-price="${svc.price}" data-duration="${svc.duration_minutes}" onclick="toggleService(this)">
+                    <div class="service-icon">${svc.icon || '⭐'}</div>
+                    <div class="service-info">
+                        <div class="service-name">${svc.name}</div>
+                        <div class="service-meta">${Utils.formatDuration(svc.duration_minutes)}</div>
+                    </div>
+                    <div class="service-price">${Utils.formatPrice(svc.price)}</div>
+                    <div class="service-check">✓</div>
+                </div>
+            `).join('');
+        }
 
         // ===== STEP NAVIGATION =====
         function goToStep(step) {
@@ -936,29 +988,54 @@
             });
             
             currentStep = step;
+            if (step === 2) renderStaff();
             if (step === 3) renderCalendar();
         }
 
-        // ===== STEP 1: SERVICES =====
-        document.querySelectorAll('.service-item').forEach(item => {
-            item.addEventListener('click', () => {
-                item.classList.toggle('selected');
-                const service = item.dataset.service;
-                if (item.classList.contains('selected')) {
-                    selectedServices.push({
-                        name: item.querySelector('.service-name').textContent,
-                        price: parseInt(item.dataset.price),
-                        duration: parseInt(item.dataset.duration),
-                        id: service
-                    });
-                } else {
-                    selectedServices = selectedServices.filter(s => s.id !== service);
-                }
-                document.getElementById('btn-step1').disabled = selectedServices.length === 0;
-            });
-        });
+        // ===== STEP 1: SELECT SERVICE =====
+        function toggleService(item) {
+            // For MVP: single service selection
+            document.querySelectorAll('.service-item').forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+            
+            selectedServices = [{
+                id: item.dataset.service,
+                name: item.querySelector('.service-name').textContent,
+                price: parseInt(item.dataset.price),
+                duration: parseInt(item.dataset.duration)
+            }];
+            
+            document.getElementById('btn-step1').disabled = false;
+        }
 
-        // ===== STEP 2: STAFF =====
+        // ===== STEP 2: SELECT STAFF =====
+        function renderStaff() {
+            const container = document.getElementById('staff-grid');
+            
+            // Filter staff that can provide the selected service
+            // For simplicity, show all active staff
+            let staffToShow = allStaff.filter(s => s.is_active);
+
+            let html = staffToShow.map(s => `
+                <div class="staff-card" data-staff="${s.id}" onclick="selectStaff(this)">
+                    <div class="staff-avatar">${s.display_name.charAt(0).toUpperCase()}</div>
+                    <div class="staff-name">${s.display_name}</div>
+                    <div class="staff-role">${s.bio || s.role}</div>
+                </div>
+            `).join('');
+
+            // Add "No preference" option
+            html += `
+                <div class="staff-card" data-staff="${staffToShow.length > 0 ? staffToShow[0].id : ''}" onclick="selectStaff(this)">
+                    <div class="staff-avatar">🎲</div>
+                    <div class="staff-name">Sin preferencia</div>
+                    <div class="staff-role">Primer disponible</div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
         function selectStaff(card) {
             document.querySelectorAll('.staff-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
@@ -969,8 +1046,8 @@
             document.getElementById('btn-step2').disabled = false;
         }
 
-        // ===== STEP 3: CALENDAR =====
-        function renderCalendar() {
+        // ===== STEP 3: DATE & TIME (REAL AVAILABILITY) =====
+        async function renderCalendar() {
             const year = currentMonth.getFullYear();
             const month = currentMonth.getMonth();
             const firstDay = new Date(year, month, 1).getDay();
@@ -979,6 +1056,9 @@
 
             const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
             document.getElementById('calendar-month').textContent = `${monthNames[month]} ${year}`;
+
+            // Get available days from backend
+            availableDays = await Availability.getAvailableDays(business.id, year, month);
 
             let html = '';
             const dayLabels = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
@@ -990,88 +1070,136 @@
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month, day);
-                const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-                const isSunday = date.getDay() === 0;
+                const isAvailable = availableDays.includes(day);
                 const isToday = date.toDateString() === today.toDateString();
                 const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
                 
                 let classes = 'day-cell';
-                if (isPast || isSunday) classes += ' disabled';
+                if (!isAvailable) classes += ' disabled';
                 if (isToday) classes += ' today';
                 if (isSelected) classes += ' selected';
 
-                html += `<div class="${classes}" onclick="selectDate(${year},${month},${day})">${day}</div>`;
+                const onclick = isAvailable ? `selectDate(${year},${month},${day})` : '';
+                html += `<div class="${classes}" onclick="${onclick}">${day}</div>`;
             }
 
             document.getElementById('calendar-grid').innerHTML = html;
         }
 
-        function selectDate(year, month, day) {
-            const date = new Date(year, month, day);
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            if (date < today || date.getDay() === 0) return;
+        async function selectDate(year, month, day) {
+            selectedDate = new Date(year, month, day);
+            selectedTime = null;
+            document.getElementById('btn-step3').disabled = true;
 
-            selectedDate = date;
-            renderCalendar();
-            showTimeSlots();
+            // Re-render calendar to show selection
+            await renderCalendar();
+
+            // Load real time slots from backend
+            await loadTimeSlots(year, month, day);
         }
 
-        function showTimeSlots() {
-            const slots = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00'];
-            const taken = ['10:00','11:30','14:30','16:00'];
+        async function loadTimeSlots(year, month, day) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const duration = selectedServices[0]?.duration || 30;
 
-            let html = '';
-            slots.forEach(slot => {
-                const isTaken = taken.includes(slot);
-                html += `<div class="time-slot ${isTaken ? 'unavailable' : ''}" 
-                          onclick="${isTaken ? '' : `selectTime('${slot}')`}">${slot}</div>`;
-            });
-
-            document.getElementById('time-slots').innerHTML = html;
+            document.getElementById('time-slots').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 10px;">⏳ Buscando horarios...</div>';
             document.getElementById('time-section').classList.remove('hidden');
+
+            // Get available slots from Supabase RPC
+            const slots = await Availability.getSlots(business.id, selectedStaff.id, dateStr, duration);
+
+            if (slots.length === 0) {
+                document.getElementById('time-slots').innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 10px;">No hay horarios disponibles para este día.</div>';
+                return;
+            }
+
+            document.getElementById('time-slots').innerHTML = slots.map(slot => `
+                <div class="time-slot" onclick="selectTime('${slot.start}', '${dateStr}')">${slot.start}</div>
+            `).join('');
         }
 
-        function selectTime(time) {
+        function selectTime(time, dateStr) {
             selectedTime = time;
             document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
             event.target.classList.add('selected');
             document.getElementById('btn-step3').disabled = false;
         }
 
-        function changeMonth(delta) {
+        async function changeMonth(delta) {
             currentMonth.setMonth(currentMonth.getMonth() + delta);
             selectedDate = null;
             selectedTime = null;
             document.getElementById('time-section').classList.add('hidden');
             document.getElementById('btn-step3').disabled = true;
-            renderCalendar();
+            await renderCalendar();
         }
 
-        // ===== STEP 4: SUBMIT =====
-        function submitBooking(e) {
+        // ===== STEP 4: SUBMIT BOOKING (REAL) =====
+        async function submitBooking(e) {
             e.preventDefault();
             
-            const clientName = document.getElementById('client-name').value;
+            const clientName = document.getElementById('client-name').value.trim();
+            const clientPhone = document.getElementById('client-phone').value.trim();
+            const clientEmail = document.getElementById('client-email').value.trim();
+            const clientNotes = document.getElementById('client-notes').value.trim();
+
+            // Validation
+            if (!clientName || !clientPhone || !clientEmail) {
+                Utils.toast('Completa todos los campos obligatorios', 'error');
+                return;
+            }
+
+            if (!Utils.isValidEmail(clientEmail)) {
+                Utils.toast('Ingresa un email válido', 'error');
+                return;
+            }
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            Utils.btnLoading(btn, true);
+
+            // Build timestamp
+            const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+            const startTime = `${dateStr}T${selectedTime}:00`;
+
+            // Create real booking via Supabase RPC
+            const { bookingId, error } = await DB.bookings.create({
+                businessId: business.id,
+                serviceId: selectedServices[0].id,
+                staffId: selectedStaff.id,
+                startTime: startTime,
+                customerName: clientName,
+                customerEmail: clientEmail,
+                customerPhone: clientPhone,
+                notes: clientNotes || null
+            });
+
+            Utils.btnLoading(btn, false);
+
+            if (error) {
+                if (error.includes('no_double_booking') || error.includes('exclude')) {
+                    Utils.toast('Este horario acaba de ser tomado. Por favor elige otro.', 'error');
+                } else {
+                    Utils.toast('Error al crear reserva: ' + error, 'error');
+                }
+                return;
+            }
+
+            // Success! Show confirmation
             const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
-            const serviceNames = selectedServices.map(s => s.name).join(', ');
-            
-            const dateStr = selectedDate.toLocaleDateString('es-CL', { 
+            const dateDisplay = selectedDate.toLocaleDateString('es-CL', { 
                 weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
             });
 
-            document.getElementById('sum-service').textContent = serviceNames;
+            document.getElementById('sum-service').textContent = selectedServices.map(s => s.name).join(', ');
             document.getElementById('sum-staff').textContent = selectedStaff.name;
-            document.getElementById('sum-date').textContent = dateStr;
+            document.getElementById('sum-date').textContent = dateDisplay;
             document.getElementById('sum-time').textContent = selectedTime + ' hrs';
             document.getElementById('sum-client').textContent = clientName;
-            document.getElementById('sum-total').textContent = '$' + totalPrice.toLocaleString('es-CL');
+            document.getElementById('sum-total').textContent = Utils.formatPrice(totalPrice);
 
             goToStep(5);
+            Utils.toast('¡Reserva confirmada! 🎉', 'success');
         }
-
-        // Init
-        renderCalendar();
     </script>
 </body>
 </html>
