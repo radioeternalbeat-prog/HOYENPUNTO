@@ -2,22 +2,14 @@
  * ============================================================
  * HOYENPUNTO — Supabase Configuration
  * ============================================================
- * Este archivo inicializa el cliente de Supabase y se importa
- * en todas las páginas del sitio.
- * 
- * SETUP:
- * 1. Crea un proyecto en https://supabase.com
- * 2. Ejecuta supabase/schema.sql en el SQL Editor
- * 3. Reemplaza SUPABASE_URL y SUPABASE_ANON_KEY abajo
- * 4. En Authentication > Settings, configura:
- *    - Site URL: https://tu-sitio.netlify.app
- *    - Redirect URLs: https://tu-sitio.netlify.app/dashboard/
+ * Proyecto conectado a Supabase (ca-central-1)
+ * Auth + PostgreSQL + RLS + RPC Functions
  * ============================================================
  */
 
-// ===== CONFIGURACIÓN — REEMPLAZAR CON TUS VALORES =====
-const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co';
-const SUPABASE_ANON_KEY = 'TU_ANON_KEY_AQUI';
+// ===== CONFIGURACIÓN HOYENPUNTO =====
+const SUPABASE_URL = 'https://kbdmkpkvfuooaxeprgcz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtiZG1rcGt2ZnVvb2F4ZXByZ2N6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4MzkyODgsImV4cCI6MjEwMzQxNTI4OH0.81n10GmyAeD9a7CMRmMCDSdVRQwinU517wC0UvI-ntM';
 
 // ===== INICIALIZAR CLIENTE =====
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
