@@ -1338,39 +1338,63 @@
                 return;
             }
 
-            const btn = event.target;
+            const btn = document.querySelector('#step-0 .btn-primary');
             Utils.btnLoading(btn, true);
 
-            // Sign up with Supabase Auth
-            const { user, error } = await Auth.signUp(email, password);
-            
-            if (error) {
-                Utils.btnLoading(btn, false);
-                if (error.includes('already registered')) {
-                    Utils.toast('Este email ya está registrado. Intenta iniciar sesión.', 'error');
-                } else {
-                    Utils.toast(error, 'error');
+            try {
+                // Sign up with Supabase Auth
+                const { user, error } = await Auth.signUp(email, password);
+                
+                if (error) {
+                    Utils.btnLoading(btn, false);
+                    if (error.includes('already registered') || error.includes('already been registered')) {
+                        // Try to sign in directly
+                        const { error: signInError } = await Auth.signIn(email, password);
+                        if (signInError) {
+                            Utils.toast('Este email ya está registrado. Verifica tu contraseña.', 'error');
+                        } else {
+                            Utils.toast('¡Sesión iniciada!', 'success');
+                            const slug = Utils.generateSlug(businessName);
+                            document.getElementById('biz-slug').value = slug;
+                            goToStep(1);
+                        }
+                    } else {
+                        Utils.toast(error, 'error');
+                    }
+                    return;
                 }
-                return;
-            }
 
-            // Auto sign-in after registration
-            const { error: signInError } = await Auth.signIn(email, password);
-            if (signInError) {
+                // If signup returned a session directly (email confirm disabled)
+                const session = await Auth.getSession();
+                if (session) {
+                    Utils.btnLoading(btn, false);
+                    Utils.toast('¡Cuenta creada exitosamente!', 'success');
+                    const slug = Utils.generateSlug(businessName);
+                    document.getElementById('biz-slug').value = slug;
+                    goToStep(1);
+                    return;
+                }
+
+                // Try auto sign-in (works when email confirmation is OFF)
+                const { error: signInError } = await Auth.signIn(email, password);
                 Utils.btnLoading(btn, false);
-                Utils.toast('Cuenta creada. Revisa tu email para confirmar y luego inicia sesión.', 'info');
-                return;
+                
+                if (signInError) {
+                    // Email confirmation is required
+                    Utils.toast('✅ Cuenta creada. Revisa tu email para confirmar y luego refresca esta página.', 'info');
+                    return;
+                }
+
+                Utils.toast('¡Cuenta creada exitosamente!', 'success');
+                const slug = Utils.generateSlug(businessName);
+                document.getElementById('biz-slug').value = slug;
+                goToStep(1);
+
+            } catch (err) {
+                Utils.btnLoading(btn, false);
+                Utils.toast('Error de conexión. Intenta de nuevo.', 'error');
+                console.error('CreateAccount error:', err);
             }
-
-            Utils.btnLoading(btn, false);
-            Utils.toast('¡Cuenta creada exitosamente!', 'success');
-
-            // Auto-fill slug
-            const slug = Utils.generateSlug(businessName);
-            document.getElementById('biz-slug').value = slug;
-
-            // Move to step 1
-            goToStep(1);
         }
 
         // ===== STEP 1: SAVE BUSINESS DATA =====
