@@ -1,0 +1,39 @@
+# ===== HOYENPUNTO — Netlify Configuration =====
+
+[build]
+  # El directorio de publicación es la landing page
+  publish = "landing"
+  # No hay comando de build (HTML estático)
+  command = "echo 'HoyEnPunto - Deploy OK'"
+
+# Headers de seguridad
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Cache de assets estáticos
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Redirects para SPA (futuro)
+[[redirects]]
+  from = "/app/*"
+  to = "/index.html"
+  status = 200
+
+# Custom 404
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
