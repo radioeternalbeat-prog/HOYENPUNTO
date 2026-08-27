@@ -141,7 +141,7 @@ exports.handler = async (event) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                from: 'HoyEnPunto <reservas@hoyenpunto.com>',
+                from: 'HoyEnPunto <onboarding@resend.dev>',
                 to: [customerEmail],
                 subject: `✅ Reserva confirmada — ${serviceName} en ${businessName}`,
                 html: emailHtml
