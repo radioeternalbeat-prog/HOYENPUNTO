@@ -694,6 +694,83 @@ body {
     border-bottom: none;
 }
 
+/* ===== LAUNCH OFFER ===== */
+.launch-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    max-width: 720px;
+    margin: 0 auto 40px;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, rgba(255, 128, 0, 0.12) 0%, rgba(225, 255, 0, 0.06) 100%);
+    border: 1px solid rgba(255, 128, 0, 0.3);
+    border-radius: 16px;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.launch-fire {
+    font-size: 1.5rem;
+    animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.8; }
+}
+
+.launch-text {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.launch-text strong {
+    color: var(--primary-light);
+}
+
+.launch-counter {
+    background: var(--primary);
+    color: var(--forest-950);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    white-space: nowrap;
+    box-shadow: var(--primary-glow);
+}
+
+.pricing-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.launch-card {
+    border: 2px solid var(--accent) !important;
+    box-shadow: 0 0 30px rgba(225, 255, 0, 0.15), var(--glass-shadow) !important;
+}
+
+.launch-badge {
+    background: var(--accent) !important;
+    color: var(--forest-950) !important;
+}
+
+.price-old {
+    display: block;
+    font-size: 1rem;
+    color: var(--text-dim);
+    text-decoration: line-through;
+    margin-bottom: 4px;
+}
+
+.price-note {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-top: 8px;
+}
+
 /* ===== CTA ===== */
 .cta {
     padding: 100px 0;
@@ -825,7 +902,7 @@ body {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .pricing-grid {
+    .pricing-grid, .pricing-grid-2 {
         grid-template-columns: 1fr;
         max-width: 400px;
         margin: 0 auto;
@@ -833,6 +910,11 @@ body {
 
     .pricing-card.featured {
         transform: none;
+    }
+
+    .launch-banner {
+        flex-direction: column;
+        gap: 10px;
     }
 
     .footer-grid {
