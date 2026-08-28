@@ -437,6 +437,19 @@ const DB = {
         }
     },
 
+    // ===== ANALYTICS =====
+    analytics: {
+        /**
+         * Obtener analytics de un negocio
+         */
+        async getBusinessAnalytics(businessId) {
+            const { data, error } = await sb.rpc('get_business_analytics', {
+                p_business_id: businessId
+            });
+            return { data, error: error?.message };
+        }
+    },
+
     // ===== ADMIN (Super-Admin only) =====
     admin: {
         /**

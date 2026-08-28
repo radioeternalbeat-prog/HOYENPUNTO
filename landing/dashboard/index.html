@@ -861,6 +861,10 @@
                     Reservas
                     <span class="nav-item-badge" id="badge-reservas"></span>
                 </a>
+                <a class="nav-item" href="/dashboard/analytics.html">
+                    <span class="nav-item-icon">📈</span>
+                    Analytics
+                </a>
             </div>
 
             <div class="nav-section">
@@ -941,7 +945,16 @@
 
         <!-- DASHBOARD -->
         <section class="dashboard">
-            
+
+            <!-- TRIAL / UPGRADE BANNER -->
+            <div id="trial-banner" style="display:none; align-items:center; gap:16px; padding:16px 24px; margin-bottom:24px; background:linear-gradient(135deg, rgba(255,128,0,0.12) 0%, rgba(225,255,0,0.06) 100%); border:1px solid rgba(255,128,0,0.3); border-radius:14px; flex-wrap:wrap;">
+                <span style="font-size:1.5rem;">🔥</span>
+                <span id="trial-text" style="flex:1; font-size:0.9rem; color:var(--text-secondary); min-width:200px;">
+                    Te quedan <strong id="trial-days" style="color:var(--primary-light);">7</strong> días de prueba gratis. Asegura tu cupo: <strong style="color:var(--accent);">Professional Perpetua por $29 pago único</strong> (solo 50 cupos).
+                </span>
+                <a href="/dashboard/upgrade.html" style="padding:10px 20px; border-radius:8px; background:var(--primary); color:var(--forest-950); font-size:0.85rem; font-weight:700; text-decoration:none; white-space:nowrap; box-shadow:var(--primary-glow);">Activar por $29 →</a>
+            </div>
+
             <!-- STATS -->
             <div class="stats-grid">
                 <div class="stat-card">
@@ -1099,8 +1112,22 @@
             document.getElementById('topbar-greeting').textContent = `Buenos días, ${biz.name.split(' ')[0]} 👋`;
             document.getElementById('topbar-subtitle').textContent = `${Utils.formatDate(new Date(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} — ${biz.name}`;
             document.getElementById('sidebar-user-name').textContent = user.email.split('@')[0];
-            document.getElementById('sidebar-user-plan').textContent = `Plan ${biz.plan.charAt(0).toUpperCase() + biz.plan.slice(1)} ⚡`;
+
+            // Estado de suscripción en sidebar
+            const statusLabels = { trial: 'Prueba 7 días', active: 'Professional', perpetual: 'Perpetua ⚡', expired: 'Expirado', cancelled: 'Cancelado' };
+            document.getElementById('sidebar-user-plan').textContent = statusLabels[biz.subscription_status] || `Plan ${biz.plan}`;
             document.getElementById('link-box-url').textContent = `hoyenpunto.netlify.app/reservar/?slug=${biz.slug}`;
+
+            // Mostrar banner de upgrade si está en trial
+            handleSubscriptionBanner(biz);
+
+            // Manejar retorno de pago exitoso
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('pago') === 'exitoso') {
+                Utils.toast('🎉 ¡Pago recibido! Tu cuenta se activará en unos minutos.', 'success', 6000);
+            } else if (params.get('pago') === 'fallido') {
+                Utils.toast('El pago no se completó. Puedes intentar de nuevo.', 'error');
+            }
 
             // Show admin link if super-admin
             try {
@@ -1118,6 +1145,25 @@
             updateCalendarTitle();
             await loadDayBookings();
         })();
+
+        // ===== SUBSCRIPTION BANNER =====
+        function handleSubscriptionBanner(biz) {
+            const banner = document.getElementById('trial-banner');
+            if (!banner) return;
+
+            if (biz.subscription_status === 'trial') {
+                let daysLeft = 7;
+                if (biz.trial_ends_at) {
+                    const end = new Date(biz.trial_ends_at);
+                    daysLeft = Math.max(0, Math.ceil((end - new Date()) / (1000 * 60 * 60 * 24)));
+                }
+                document.getElementById('trial-days').textContent = daysLeft;
+                banner.style.display = 'flex';
+                if (daysLeft === 0) {
+                    document.getElementById('trial-text').innerHTML = 'Tu prueba gratis <strong>terminó</strong>. Activa Professional Perpetua por $29 pago único.';
+                }
+            }
+        }
 
         // ===== CALENDAR NAVIGATION =====
         function updateCalendarTitle() {

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Plan — HoyEnPunto</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff8000; --primary-dark: #e67300; --primary-light: #ff9933;
+            --primary-50: rgba(255,128,0,0.08); --primary-glow: 0 0 20px rgba(255,128,0,0.4);
+            --accent: #e1ff00; --accent-glow: 0 0 15px rgba(225,255,0,0.35);
+            --forest-950: #05140b; --forest-900: #0a2616;
+            --surface: rgba(255,255,255,0.03); --surface-hover: rgba(255,255,255,0.06);
+            --surface-border: rgba(255,255,255,0.07); --glass-bg: rgba(255,255,255,0.025);
+            --glass-border: rgba(255,255,255,0.1); --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --text-primary: #fff; --text-secondary: rgba(255,255,255,0.75);
+            --text-muted: rgba(255,255,255,0.45); --text-dim: rgba(255,255,255,0.25);
+            --success: #10b981; --danger: #ef4444; --radius: 10px; --radius-lg: 14px; --radius-xl: 24px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--forest-950); background-image: radial-gradient(ellipse at 50% 0%, rgba(255,128,0,0.08) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(225,255,0,0.04) 0%, transparent 50%); color: var(--text-primary); min-height: 100vh; padding: 24px; display: flex; align-items: center; justify-content: center; }
+        .container { max-width: 520px; width: 100%; }
+        .back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--surface-border); background: var(--surface); color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: all 0.15s; margin-bottom: 24px; }
+        .back-btn:hover { background: var(--surface-hover); border-color: var(--primary); color: var(--primary); }
+        .offer-card { background: var(--glass-bg); backdrop-filter: blur(20px); border-radius: var(--radius-xl); border: 2px solid var(--accent); box-shadow: var(--accent-glow), var(--glass-shadow); padding: 36px; text-align: center; position: relative; overflow: hidden; }
+        .offer-card::before { content: ''; position: absolute; top: -80px; right: -80px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(255,128,0,0.15) 0%, transparent 70%); pointer-events: none; }
+        .offer-badge { display: inline-block; background: var(--accent); color: var(--forest-950); padding: 6px 18px; border-radius: 100px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px; }
+        .offer-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+        .offer-sub { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; }
+        .price-block { margin-bottom: 24px; }
+        .price-old { font-size: 1rem; color: var(--text-dim); text-decoration: line-through; }
+        .price-main { font-size: 3.5rem; font-weight: 900; color: var(--primary); line-height: 1; text-shadow: 0 0 30px rgba(255,128,0,0.3); }
+        .price-unit { font-size: 0.9rem; color: var(--text-secondary); font-weight: 600; margin-top: 4px; }
+        .features { list-style: none; text-align: left; margin-bottom: 28px; }
+        .features li { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 0.9rem; color: var(--text-secondary); border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .features li::before { content: '✓'; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: rgba(255,128,0,0.15); color: var(--primary); font-size: 0.7rem; font-weight: 700; flex-shrink: 0; }
+        .btn-pay { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 18px; border-radius: var(--radius); background: var(--primary); color: var(--forest-950); border: none; font-size: 1.05rem; font-weight: 800; cursor: pointer; font-family: inherit; box-shadow: var(--primary-glow); transition: all 0.2s; }
+        .btn-pay:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 0 35px rgba(255,128,0,0.5); }
+        .btn-pay:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .secure-note { font-size: 0.75rem; color: var(--text-dim); margin-top: 16px; }
+        .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(5,20,11,0.3); border-top-color: var(--forest-950); border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .status-perpetual { background: rgba(225,255,0,0.1); border: 1px solid rgba(225,255,0,0.2); border-radius: var(--radius); padding: 20px; text-align: center; }
+        .status-perpetual h3 { color: var(--accent); font-size: 1.2rem; margin-bottom: 8px; }
+        .status-perpetual p { color: var(--text-muted); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/dashboard/" class="back-btn">← Volver al Dashboard</a>
+
+        <!-- Loading -->
+        <div id="loading" class="offer-card">
+            <p style="font-size: 2rem;">⏳</p>
+            <p style="color: var(--text-muted);">Cargando...</p>
+        </div>
+
+        <!-- Ya es perpetua -->
+        <div id="already-perpetual" class="offer-card" style="display:none;">
+            <div class="status-perpetual">
+                <h3>⚡ ¡Ya tienes Professional Perpetua!</h3>
+                <p>Tu cuenta tiene acceso de por vida. Gracias por ser parte de la oferta de lanzamiento. 🏎️</p>
+            </div>
+            <a href="/dashboard/" class="btn-pay" style="text-decoration:none; margin-top:20px;">Ir a mi Dashboard →</a>
+        </div>
+
+        <!-- Oferta -->
+        <div id="offer" class="offer-card" style="display:none;">
+            <div class="offer-badge">🔥 Oferta de Lanzamiento</div>
+            <h2 class="offer-title">Professional Perpetua</h2>
+            <p class="offer-sub">Paga una sola vez. Úsalo para siempre.</p>
+
+            <div class="price-block">
+                <div class="price-old">Antes: $19 USD/mes</div>
+                <div class="price-main">$29</div>
+                <div class="price-unit">USD — Pago único, sin mensualidades</div>
+            </div>
+
+            <ul class="features">
+                <li>Acceso de por vida (sin mensualidades)</li>
+                <li>Hasta 5 empleados</li>
+                <li>Reservas ilimitadas</li>
+                <li>Recordatorios automáticos por email</li>
+                <li>White-label completo</li>
+                <li>CRM de clientes</li>
+                <li>Soporte prioritario</li>
+                <li>Todas las actualizaciones futuras</li>
+            </ul>
+
+            <button class="btn-pay" id="btn-pay" onclick="startPayment()">
+                💳 Pagar $29 y Activar de por Vida
+            </button>
+            <p class="secure-note">🔒 Pago seguro procesado por MercadoPago</p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/db.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <script>
+        let business = null;
+
+        (async () => {
+            const user = await Auth.requireAuth('/login/');
+            if (!user) return;
+            const { data: biz } = await DB.businesses.getMine();
+            if (!biz) { window.location.href = '/registro/'; return; }
+            business = biz;
+
+            document.getElementById('loading').style.display = 'none';
+
+            if (biz.subscription_status === 'perpetual') {
+                document.getElementById('already-perpetual').style.display = 'block';
+            } else {
+                document.getElementById('offer').style.display = 'block';
+            }
+        })();
+
+        async function startPayment() {
+            const btn = document.getElementById('btn-pay');
+            btn.innerHTML = '<span class="spinner"></span> Redirigiendo a MercadoPago...';
+            btn.disabled = true;
+
+            const user = await Auth.getUser();
+
+            try {
+                const resp = await fetch('/api/create-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        businessId: business.id,
+                        businessName: business.name,
+                        email: user.email
+                    })
+                });
+
+                const result = await resp.json();
+
+                if (result.init_point) {
+                    // Redirigir al checkout de MercadoPago
+                    window.location.href = result.init_point;
+                } else {
+                    Utils.toast('Error: ' + (result.error || 'No se pudo crear el pago'), 'error');
+                    btn.innerHTML = '💳 Pagar $29 y Activar de por Vida';
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                Utils.toast('Error de conexión. Intenta de nuevo.', 'error');
+                btn.innerHTML = '💳 Pagar $29 y Activar de por Vida';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

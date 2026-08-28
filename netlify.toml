@@ -10,6 +10,10 @@
 [functions]
   directory = "netlify/functions"
 
+# Scheduled Function: recordatorios automáticos (cada hora)
+[functions."send-reminders"]
+  schedule = "@hourly"
+
 # Headers de seguridad
 [[headers]]
   for = "/*"
