@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — HoyEnPunto</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff8000; --primary-dark: #e67300; --primary-light: #ff9933;
+            --primary-50: rgba(255,128,0,0.08); --primary-glow: 0 0 20px rgba(255,128,0,0.4);
+            --accent: #e1ff00; --forest-950: #05140b; --forest-900: #0a2616;
+            --surface: rgba(255,255,255,0.03); --surface-hover: rgba(255,255,255,0.06);
+            --surface-border: rgba(255,255,255,0.07); --glass-bg: rgba(255,255,255,0.025);
+            --glass-border: rgba(255,255,255,0.08); --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --text-primary: #fff; --text-secondary: rgba(255,255,255,0.75);
+            --text-muted: rgba(255,255,255,0.45); --text-dim: rgba(255,255,255,0.25);
+            --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --radius: 10px; --radius-lg: 14px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--forest-950); background-image: radial-gradient(ellipse at 80% 0%, rgba(255,128,0,0.05) 0%, transparent 45%), radial-gradient(ellipse at 20% 100%, rgba(225,255,0,0.03) 0%, transparent 45%); color: var(--text-primary); min-height: 100vh; padding: 24px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+        .header-left { display: flex; align-items: center; gap: 14px; }
+        .admin-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.3rem; }
+        .admin-logo .badge { font-size: 0.7rem; background: var(--accent); color: var(--forest-950); padding: 3px 10px; border-radius: 100px; font-weight: 800; }
+        .header-actions { display: flex; gap: 10px; }
+        .btn { padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; font-family: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .btn-outline { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--surface-border); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        /* Access denied */
+        .access-denied { text-align: center; padding: 80px 20px; }
+        .access-denied h2 { font-size: 1.5rem; margin: 16px 0 8px; }
+        .access-denied p { color: var(--text-muted); margin-bottom: 20px; }
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 28px; }
+        .stat-card { padding: 18px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); }
+        .stat-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px; }
+        .stat-value { font-size: 1.6rem; font-weight: 800; }
+        .stat-value.accent { color: var(--primary); }
+        .stat-value.volt { color: var(--accent); }
+        /* Spots bar */
+        .spots-bar { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 28px; }
+        .spots-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .spots-title { font-size: 0.85rem; font-weight: 700; }
+        .spots-count { font-size: 0.85rem; font-weight: 700; color: var(--primary); }
+        .spots-progress { height: 10px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+        .spots-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 100px; transition: width 0.5s; }
+        /* Table */
+        .section-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+        .business-list { display: flex; flex-direction: column; gap: 8px; }
+        .business-card { display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); transition: all 0.2s; cursor: pointer; }
+        .business-card:hover { border-color: rgba(255,128,0,0.25); }
+        .biz-avatar { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--forest-950); flex-shrink: 0; }
+        .biz-info { flex: 1; min-width: 0; }
+        .biz-name { font-weight: 700; font-size: 0.9rem; }
+        .biz-meta { font-size: 0.75rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .biz-stats { display: flex; gap: 16px; font-size: 0.75rem; color: var(--text-muted); }
+        .biz-stat-num { font-weight: 700; color: var(--text-primary); }
+        .biz-status { font-size: 0.7rem; font-weight: 600; padding: 4px 10px; border-radius: 100px; white-space: nowrap; }
+        .status-trial { background: rgba(245,158,11,0.1); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+        .status-active { background: rgba(16,185,129,0.1); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+        .status-perpetual { background: rgba(225,255,0,0.1); color: var(--accent); border: 1px solid rgba(225,255,0,0.2); }
+        .status-expired { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+        .status-cancelled { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--surface-border); }
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 24px; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: var(--forest-900); border-radius: 20px; padding: 32px; width: 100%; max-width: 540px; border: 1px solid var(--glass-border); max-height: 90vh; overflow-y: auto; }
+        .modal h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; }
+        .modal-sub { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; }
+        .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        .detail-label { color: var(--text-muted); }
+        .detail-value { font-weight: 600; text-align: right; }
+        .form-group { margin: 16px 0; }
+        .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+        .form-input, .form-select, textarea.form-input { width: 100%; padding: 11px 14px; border: 1px solid var(--surface-border); border-radius: 8px; font-size: 0.9rem; font-family: inherit; outline: none; background: var(--surface); color: var(--text-primary); }
+        .form-input:focus, .form-select:focus { border-color: var(--primary); }
+        textarea.form-input { resize: vertical; min-height: 70px; }
+        .form-select option { background: var(--forest-900); }
+        .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+        .modal-actions .btn { flex: 1; justify-content: center; }
+        .btn-save { background: var(--primary); color: var(--forest-950); box-shadow: var(--primary-glow); }
+        .btn-cancel { background: var(--surface); color: var(--text-secondary); border: 1px solid var(--surface-border); }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .search-box { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--surface-border); background: var(--surface); min-width: 240px; margin-bottom: 16px; }
+        .search-box input { flex: 1; border: none; background: transparent; outline: none; color: var(--text-primary); font-size: 0.85rem; font-family: inherit; }
+        @media (max-width: 700px) { .biz-stats { display: none; } .header { flex-direction: column; align-items: flex-start; } }
+    </style>
+</head>
+<body>
+    <!-- Loading -->
+    <div id="loading" class="container">
+        <div class="empty-state"><p style="font-size:2rem;">⏳</p><p>Verificando acceso...</p></div>
+    </div>
+
+    <!-- Access Denied -->
+    <div id="access-denied" class="container" style="display:none;">
+        <div class="access-denied">
+            <p style="font-size: 3rem;">🔒</p>
+            <h2>Acceso Restringido</h2>
+            <p>Esta sección es solo para administradores de HoyEnPunto.</p>
+            <a href="/dashboard/" class="btn btn-outline">← Ir a mi Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="container" style="display:none;">
+        <div class="header">
+            <div class="header-left">
+                <div class="admin-logo">
+                    <span>🕐</span>
+                    <span>HoyEnPunto</span>
+                    <span class="badge">ADMIN</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="/dashboard/" class="btn btn-outline">📊 Mi Dashboard</a>
+                <a onclick="Auth.signOut()" class="btn btn-outline" style="cursor:pointer;">Salir</a>
+            </div>
+        </div>
+
+        <!-- Stats globales -->
+        <div class="stats-grid" id="stats-grid"></div>
+
+        <!-- Barra de cupos de oferta -->
+        <div class="spots-bar">
+            <div class="spots-header">
+                <span class="spots-title">🔥 Cupos Oferta Perpetua ($29)</span>
+                <span class="spots-count" id="spots-text">— / 50</span>
+            </div>
+            <div class="spots-progress">
+                <div class="spots-fill" id="spots-fill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- Lista de negocios -->
+        <div class="section-title">📋 Todas las Cuentas (<span id="biz-count">0</span>)</div>
+        <div class="search-box">
+            <span>🔍</span>
+            <input type="text" id="search-input" placeholder="Buscar negocio por nombre, email o slug..." oninput="filterBusinesses(this.value)">
+        </div>
+        <div class="business-list" id="business-list"></div>
+    </div>
+
+    <!-- Modal detalle/edición -->
+    <div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this) closeModal()">
+        <div class="modal" id="modal-content"></div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/db.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <script>
+        let allBusinesses = [];
+
+        const COLORS = ['#ff8000', '#e1ff00', '#2563eb', '#7c3aed', '#e91e8c', '#059669', '#dc2626', '#0891b2'];
+
+        // ===== INIT: verificar super-admin =====
+        (async () => {
+            const user = await Auth.getUser();
+            if (!user) { window.location.href = '/login/'; return; }
+
+            const isAdmin = await DB.admin.isSuperAdmin();
+            document.getElementById('loading').style.display = 'none';
+
+            if (!isAdmin) {
+                document.getElementById('access-denied').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('admin-panel').style.display = 'block';
+            await loadStats();
+            await loadBusinesses();
+        })();
+
+        // ===== STATS =====
+        async function loadStats() {
+            const { data: stats } = await DB.admin.getStats();
+            if (!stats) return;
+
+            const cards = [
+                { label: 'Negocios Totales', value: stats.total_businesses, cls: 'accent' },
+                { label: 'Activos', value: stats.active_businesses, cls: '' },
+                { label: 'En Trial', value: stats.trial_businesses, cls: '' },
+                { label: 'Perpetuas', value: stats.perpetual_businesses, cls: 'volt' },
+                { label: 'Reservas Totales', value: stats.total_bookings, cls: '' },
+                { label: 'Clientes Totales', value: stats.total_customers, cls: '' },
+                { label: 'Reservas este Mes', value: stats.bookings_this_month, cls: 'accent' },
+                { label: 'Nuevos este Mes', value: stats.new_businesses_this_month, cls: '' }
+            ];
+
+            document.getElementById('stats-grid').innerHTML = cards.map(c => `
+                <div class="stat-card">
+                    <div class="stat-label">${c.label}</div>
+                    <div class="stat-value ${c.cls}">${c.value}</div>
+                </div>
+            `).join('');
+
+            // Spots bar
+            const used = stats.perpetual_spots_used || 0;
+            const total = stats.perpetual_spots_total || 50;
+            document.getElementById('spots-text').textContent = `${used} / ${total} vendidos`;
+            document.getElementById('spots-fill').style.width = `${(used / total) * 100}%`;
+        }
+
+        // ===== BUSINESSES =====
+        async function loadBusinesses() {
+            const { data, error } = await DB.admin.getBusinessesOverview();
+            if (error) { Utils.toast('Error: ' + error, 'error'); return; }
+            allBusinesses = data;
+            renderBusinesses(allBusinesses);
+        }
+
+        function renderBusinesses(list) {
+            document.getElementById('biz-count').textContent = list.length;
+            const container = document.getElementById('business-list');
+
+            if (list.length === 0) {
+                container.innerHTML = `<div class="empty-state"><p>No hay cuentas registradas aún.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = list.map((b, i) => {
+                const color = COLORS[i % COLORS.length];
+                const statusLabels = { trial: 'Trial', active: 'Activo', perpetual: 'Perpetua', expired: 'Expirado', cancelled: 'Cancelado' };
+                return `
+                    <div class="business-card" onclick='openDetail(${JSON.stringify(b).replace(/'/g, "&#39;")})'>
+                        <div class="biz-avatar" style="background: ${color};">${b.name.charAt(0).toUpperCase()}</div>
+                        <div class="biz-info">
+                            <div class="biz-name">${b.name}</div>
+                            <div class="biz-meta">${b.owner_email || 'sin email'} · /${b.slug}</div>
+                        </div>
+                        <div class="biz-stats">
+                            <span><span class="biz-stat-num">${b.total_bookings}</span> reservas</span>
+                            <span><span class="biz-stat-num">${b.total_customers}</span> clientes</span>
+                        </div>
+                        <span class="biz-status status-${b.subscription_status}">${statusLabels[b.subscription_status] || b.subscription_status}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterBusinesses(query) {
+            const q = query.toLowerCase();
+            const filtered = allBusinesses.filter(b =>
+                b.name.toLowerCase().includes(q) ||
+                (b.owner_email || '').toLowerCase().includes(q) ||
+                b.slug.toLowerCase().includes(q)
+            );
+            renderBusinesses(filtered);
+        }
+
+        // ===== DETAIL MODAL =====
+        function openDetail(b) {
+            const trialEnd = b.trial_ends_at ? new Date(b.trial_ends_at).toLocaleDateString('es-CL') : '—';
+            const created = new Date(b.created_at).toLocaleDateString('es-CL');
+
+            document.getElementById('modal-content').innerHTML = `
+                <h3>${b.name}</h3>
+                <div class="modal-sub">${b.owner_email || ''} · hoyenpunto.netlify.app/reservar/?slug=${b.slug}</div>
+
+                <div class="detail-row"><span class="detail-label">Categoría</span><span class="detail-value">${b.category || '—'}</span></div>
+                <div class="detail-row"><span class="detail-label">Teléfono</span><span class="detail-value">${b.phone || '—'}</span></div>
+                <div class="detail-row"><span class="detail-label">Dirección</span><span class="detail-value">${b.address || '—'}</span></div>
+                <div class="detail-row"><span class="detail-label">Registrado</span><span class="detail-value">${created}</span></div>
+                <div class="detail-row"><span class="detail-label">Trial vence</span><span class="detail-value">${trialEnd}</span></div>
+                <div class="detail-row"><span class="detail-label">Reservas</span><span class="detail-value">${b.total_bookings}</span></div>
+                <div class="detail-row"><span class="detail-label">Clientes</span><span class="detail-value">${b.total_customers}</span></div>
+                <div class="detail-row"><span class="detail-label">Servicios</span><span class="detail-value">${b.total_services}</span></div>
+                <div class="detail-row"><span class="detail-label">Empleados</span><span class="detail-value">${b.total_staff}</span></div>
+
+                <div class="form-group">
+                    <label class="form-label">Estado de suscripción</label>
+                    <select class="form-select" id="edit-status">
+                        <option value="trial" ${b.subscription_status === 'trial' ? 'selected' : ''}>Trial (prueba)</option>
+                        <option value="active" ${b.subscription_status === 'active' ? 'selected' : ''}>Activo (pagando mensual)</option>
+                        <option value="perpetual" ${b.subscription_status === 'perpetual' ? 'selected' : ''}>Perpetua ($29 pago único)</option>
+                        <option value="expired" ${b.subscription_status === 'expired' ? 'selected' : ''}>Expirado</option>
+                        <option value="cancelled" ${b.subscription_status === 'cancelled' ? 'selected' : ''}>Cancelado</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Plan</label>
+                    <select class="form-select" id="edit-plan">
+                        <option value="starter" ${b.plan === 'starter' ? 'selected' : ''}>Starter</option>
+                        <option value="professional" ${b.plan === 'professional' ? 'selected' : ''}>Professional</option>
+                        <option value="business" ${b.plan === 'business' ? 'selected' : ''}>Business</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Cuenta activa</label>
+                    <select class="form-select" id="edit-active">
+                        <option value="true" ${b.is_active ? 'selected' : ''}>Sí (visible y operativa)</option>
+                        <option value="false" ${!b.is_active ? 'selected' : ''}>No (suspendida)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">📝 Notas internas (CRM)</label>
+                    <textarea class="form-input" id="edit-notes" placeholder="Ej: Contactado por WhatsApp, interesado en plan Business...">${b.notes_admin || ''}</textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-cancel" onclick="closeModal()">Cerrar</button>
+                    <button class="btn btn-save" onclick="saveBusiness('${b.id}')">💾 Guardar Cambios</button>
+                </div>
+
+                <div style="margin-top: 12px; text-align: center;">
+                    <a href="/reservar/?slug=${b.slug}" target="_blank" style="color: var(--primary); font-size: 0.8rem; text-decoration: none;">🔗 Ver portal de reservas del negocio</a>
+                </div>
+            `;
+            document.getElementById('modal-overlay').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('show');
+        }
+
+        async function saveBusiness(id) {
+            const plan = document.getElementById('edit-plan').value;
+            const subscriptionStatus = document.getElementById('edit-status').value;
+            const isActive = document.getElementById('edit-active').value === 'true';
+            const notes = document.getElementById('edit-notes').value;
+
+            const { error } = await DB.admin.updateBusiness(id, { plan, subscriptionStatus, isActive, notes });
+            if (error) { Utils.toast('Error: ' + error, 'error'); return; }
+
+            Utils.toast('Cuenta actualizada ✓', 'success');
+            closeModal();
+            await loadStats();
+            await loadBusinesses();
+        }
+    </script>
+</body>
+</html>

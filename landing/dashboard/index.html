@@ -897,6 +897,10 @@
                     <span class="nav-item-icon">🔗</span>
                     Ver Portal Público
                 </a>
+                <a class="nav-item" id="admin-nav-link" href="/admin/" style="display:none; color: var(--accent);">
+                    <span class="nav-item-icon">⚡</span>
+                    Panel Admin
+                </a>
             </div>
         </nav>
 
@@ -1097,6 +1101,15 @@
             document.getElementById('sidebar-user-name').textContent = user.email.split('@')[0];
             document.getElementById('sidebar-user-plan').textContent = `Plan ${biz.plan.charAt(0).toUpperCase() + biz.plan.slice(1)} ⚡`;
             document.getElementById('link-box-url').textContent = `hoyenpunto.netlify.app/reservar/?slug=${biz.slug}`;
+
+            // Show admin link if super-admin
+            try {
+                const isAdmin = await DB.admin.isSuperAdmin();
+                if (isAdmin) {
+                    const adminLink = document.getElementById('admin-nav-link');
+                    if (adminLink) adminLink.style.display = 'flex';
+                }
+            } catch(e) { /* not admin, ignore */ }
 
             // Load stats
             await loadStats();

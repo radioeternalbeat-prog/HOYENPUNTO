@@ -18,6 +18,10 @@ const DB = {
             const user = await Auth.getUser();
             if (!user) return { data: null, error: 'Not authenticated' };
 
+            // Trial de 7 días desde hoy
+            const trialEnds = new Date();
+            trialEnds.setDate(trialEnds.getDate() + 7);
+
             const { data, error } = await sb
                 .from('businesses')
                 .insert({
@@ -30,7 +34,9 @@ const DB = {
                     phone,
                     timezone: timezone || 'America/Santiago',
                     logo_url,
-                    primary_color: primary_color || '#ff8000'
+                    primary_color: primary_color || '#ff8000',
+                    trial_ends_at: trialEnds.toISOString(),
+                    subscription_status: 'trial'
                 })
                 .select()
                 .single();
@@ -428,6 +434,48 @@ const DB = {
             }
 
             return { bookingId: data, error: null };
+        }
+    },
+
+    // ===== ADMIN (Super-Admin only) =====
+    admin: {
+        /**
+         * Verificar si el usuario actual es super-admin
+         */
+        async isSuperAdmin() {
+            const { data, error } = await sb.rpc('is_super_admin');
+            if (error) return false;
+            return data === true;
+        },
+
+        /**
+         * Obtener overview de todos los negocios
+         */
+        async getBusinessesOverview() {
+            const { data, error } = await sb.rpc('get_admin_overview');
+            return { data: data || [], error: error?.message };
+        },
+
+        /**
+         * Obtener stats globales de la plataforma
+         */
+        async getStats() {
+            const { data, error } = await sb.rpc('get_admin_stats');
+            return { data, error: error?.message };
+        },
+
+        /**
+         * Actualizar una cuenta (plan, estado, notas)
+         */
+        async updateBusiness(businessId, { plan, subscriptionStatus, isActive, notes }) {
+            const { error } = await sb.rpc('admin_update_business', {
+                p_business_id: businessId,
+                p_plan: plan || null,
+                p_subscription_status: subscriptionStatus || null,
+                p_is_active: isActive === undefined ? null : isActive,
+                p_notes: notes === undefined ? null : notes
+            });
+            return { error: error?.message };
         }
     }
 };
