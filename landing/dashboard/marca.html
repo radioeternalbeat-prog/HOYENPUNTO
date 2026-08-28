@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Marca — HoyEnPunto</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff8000; --primary-dark: #e67300; --primary-light: #ff9933;
+            --primary-50: rgba(255,128,0,0.08); --primary-glow: 0 0 20px rgba(255,128,0,0.4);
+            --forest-950: #05140b; --forest-900: #0a2616;
+            --surface: rgba(255,255,255,0.03); --surface-hover: rgba(255,255,255,0.06);
+            --surface-border: rgba(255,255,255,0.07); --glass-bg: rgba(255,255,255,0.025);
+            --glass-border: rgba(255,255,255,0.08); --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --text-primary: #fff; --text-secondary: rgba(255,255,255,0.75);
+            --text-muted: rgba(255,255,255,0.45); --text-dim: rgba(255,255,255,0.25);
+            --success: #10b981; --danger: #ef4444; --radius: 10px; --radius-lg: 14px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--forest-950); background-image: radial-gradient(ellipse at 20% 80%, rgba(255,128,0,0.04) 0%, transparent 40%); color: var(--text-primary); min-height: 100vh; padding: 24px; }
+        .container { max-width: 700px; margin: 0 auto; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .back-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--surface-border); background: var(--surface); color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: all 0.15s; }
+        .back-btn:hover { background: var(--surface-hover); border-color: var(--primary); color: var(--primary); }
+        .header h1 { font-size: 1.5rem; font-weight: 800; }
+        .btn-save { display: flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: 8px; background: var(--primary); color: var(--forest-950); border: none; font-size: 0.85rem; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: var(--primary-glow); transition: all 0.2s; }
+        .btn-save:hover { background: var(--primary-light); transform: translateY(-1px); }
+        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .card { background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); padding: 24px; margin-bottom: 16px; }
+        .card-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 16px; color: var(--text-secondary); }
+        .form-group { margin-bottom: 18px; }
+        .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 12px 16px; border: 1px solid var(--surface-border); border-radius: 8px; font-size: 0.9rem; font-family: inherit; outline: none; background: var(--surface); color: var(--text-primary); transition: border-color 0.2s; }
+        .form-input:focus { border-color: var(--primary); }
+        .form-input::placeholder { color: var(--text-dim); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .color-section { display: flex; align-items: center; gap: 14px; }
+        .color-picker { width: 50px; height: 50px; border-radius: 12px; border: 2px solid var(--surface-border); cursor: pointer; padding: 3px; background: var(--surface); }
+        .color-presets { display: flex; gap: 8px; flex-wrap: wrap; }
+        .color-preset { width: 34px; height: 34px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.15s; }
+        .color-preset:hover { transform: scale(1.15); }
+        .color-preset.selected { border-color: var(--text-primary); box-shadow: 0 0 0 2px var(--forest-950), 0 0 0 4px var(--text-primary); }
+        .slug-wrapper { display: flex; align-items: center; border: 1px solid var(--surface-border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+        .slug-wrapper:focus-within { border-color: var(--primary); }
+        .slug-prefix { padding: 12px 14px; font-size: 0.8rem; color: var(--text-dim); border-right: 1px solid var(--surface-border); white-space: nowrap; background: rgba(255,255,255,0.02); }
+        .slug-input { flex: 1; padding: 12px 14px; border: none; outline: none; font-size: 0.9rem; font-family: inherit; font-weight: 600; color: var(--primary-light); background: transparent; }
+        .slug-input::placeholder { color: var(--text-dim); }
+        /* Preview */
+        .preview-container { background: var(--surface); border-radius: var(--radius-lg); padding: 20px; border: 1px solid var(--surface-border); }
+        .preview-label { font-size: 0.75rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+        .preview-mock { background: var(--forest-900); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--surface-border); }
+        .preview-mock-header { padding: 20px; text-align: center; transition: background 0.3s; }
+        .preview-mock-name { font-weight: 700; font-size: 1rem; color: var(--forest-950); }
+        .preview-mock-body { padding: 16px; }
+        .preview-mock-btn { display: block; width: 100%; padding: 10px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.8rem; text-align: center; transition: background 0.3s; }
+        .portal-link { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: rgba(255,128,0,0.06); border: 1px solid rgba(255,128,0,0.15); border-radius: 8px; margin-top: 16px; }
+        .portal-link span { flex: 1; font-size: 0.85rem; color: var(--primary-light); font-weight: 600; }
+        .portal-link button { padding: 6px 14px; border-radius: 6px; border: none; background: var(--primary); color: var(--forest-950); font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+        @media (max-width: 600px) { .header { flex-direction: column; align-items: flex-start; gap: 12px; } .form-row { grid-template-columns: 1fr; } .color-section { flex-wrap: wrap; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <a href="/dashboard/" class="back-btn">← Volver</a>
+                <h1>🎨 Mi Marca</h1>
+            </div>
+            <button class="btn-save" id="btn-save" onclick="saveBranding()">💾 Guardar Cambios</button>
+        </div>
+
+        <!-- Datos del negocio -->
+        <div class="card">
+            <div class="card-title">Información del Negocio</div>
+            <div class="form-group">
+                <label class="form-label">Nombre del negocio</label>
+                <input type="text" class="form-input" id="biz-name" placeholder="Mi Negocio">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Descripción</label>
+                <input type="text" class="form-input" id="biz-description" placeholder="Breve descripción..." maxlength="280">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Dirección</label>
+                    <input type="text" class="form-input" id="biz-address" placeholder="Av. Principal 123">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono</label>
+                    <input type="tel" class="form-input" id="biz-phone" placeholder="+56 9 1234 5678">
+                </div>
+            </div>
+        </div>
+
+        <!-- Color y branding -->
+        <div class="card">
+            <div class="card-title">Color y Apariencia</div>
+            <div class="form-group">
+                <label class="form-label">Color principal de tu marca</label>
+                <div class="color-section">
+                    <input type="color" class="color-picker" id="color-picker" value="#ff8000" onchange="updatePreview()">
+                    <div class="color-presets">
+                        <div class="color-preset selected" style="background: #ff8000;" onclick="pickColor('#ff8000', this)"></div>
+                        <div class="color-preset" style="background: #e1ff00;" onclick="pickColor('#e1ff00', this)"></div>
+                        <div class="color-preset" style="background: #2563eb;" onclick="pickColor('#2563eb', this)"></div>
+                        <div class="color-preset" style="background: #7c3aed;" onclick="pickColor('#7c3aed', this)"></div>
+                        <div class="color-preset" style="background: #e91e8c;" onclick="pickColor('#e91e8c', this)"></div>
+                        <div class="color-preset" style="background: #059669;" onclick="pickColor('#059669', this)"></div>
+                        <div class="color-preset" style="background: #dc2626;" onclick="pickColor('#dc2626', this)"></div>
+                        <div class="color-preset" style="background: #0891b2;" onclick="pickColor('#0891b2', this)"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">URL de tu portal de reservas</label>
+                <div class="slug-wrapper">
+                    <span class="slug-prefix">hoyenpunto.netlify.app/reservar/?slug=</span>
+                    <input type="text" class="slug-input" id="biz-slug" placeholder="mi-negocio">
+                </div>
+            </div>
+
+            <!-- Preview -->
+            <div class="preview-container">
+                <div class="preview-label">Vista previa del portal</div>
+                <div class="preview-mock">
+                    <div class="preview-mock-header" id="preview-header" style="background: #ff8000;">
+                        <div class="preview-mock-name" id="preview-name">Tu Negocio</div>
+                    </div>
+                    <div class="preview-mock-body">
+                        <div style="height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; margin-bottom: 8px; width: 80%;"></div>
+                        <div style="height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; margin-bottom: 16px; width: 60%;"></div>
+                        <div class="preview-mock-btn" id="preview-btn" style="background: #ff8000; color: var(--forest-950);">Reservar Ahora</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portal link -->
+            <div class="portal-link">
+                <span id="portal-url">cargando...</span>
+                <button onclick="copyLink()">Copiar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/db.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <script>
+        let business = null;
+
+        (async () => {
+            const user = await Auth.requireAuth('/login/');
+            if (!user) return;
+            const { data: biz } = await DB.businesses.getMine();
+            if (!biz) { window.location.href = '/registro/'; return; }
+            business = biz;
+            populateForm(biz);
+        })();
+
+        function populateForm(biz) {
+            document.getElementById('biz-name').value = biz.name || '';
+            document.getElementById('biz-description').value = biz.description || '';
+            document.getElementById('biz-address').value = biz.address || '';
+            document.getElementById('biz-phone').value = biz.phone || '';
+            document.getElementById('biz-slug').value = biz.slug || '';
+            document.getElementById('color-picker').value = biz.primary_color || '#ff8000';
+            document.getElementById('portal-url').textContent = `hoyenpunto.netlify.app/reservar/?slug=${biz.slug}`;
+
+            // Preview
+            updatePreview();
+            document.getElementById('preview-name').textContent = biz.name;
+
+            // Highlight selected color
+            const presets = document.querySelectorAll('.color-preset');
+            presets.forEach(p => {
+                p.classList.toggle('selected', p.style.background === biz.primary_color);
+            });
+        }
+
+        function pickColor(color, el) {
+            document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('color-picker').value = color;
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const color = document.getElementById('color-picker').value;
+            document.getElementById('preview-header').style.background = color;
+            document.getElementById('preview-btn').style.background = color;
+        }
+
+        async function saveBranding() {
+            const btn = document.getElementById('btn-save');
+            btn.textContent = '⏳ Guardando...';
+            btn.disabled = true;
+
+            const name = document.getElementById('biz-name').value.trim();
+            const description = document.getElementById('biz-description').value.trim();
+            const address = document.getElementById('biz-address').value.trim();
+            const phone = document.getElementById('biz-phone').value.trim();
+            const slug = document.getElementById('biz-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+            const primary_color = document.getElementById('color-picker').value;
+
+            if (!name) { Utils.toast('El nombre es obligatorio', 'error'); btn.textContent = '💾 Guardar Cambios'; btn.disabled = false; return; }
+
+            // Check slug availability if changed
+            if (slug !== business.slug) {
+                const available = await DB.businesses.isSlugAvailable(slug);
+                if (!available) {
+                    Utils.toast('Este slug ya está en uso. Elige otro.', 'error');
+                    btn.textContent = '💾 Guardar Cambios'; btn.disabled = false;
+                    return;
+                }
+            }
+
+            const { error } = await DB.businesses.update(business.id, {
+                name, description: description || null, address: address || null,
+                phone: phone || null, slug, primary_color
+            });
+
+            btn.textContent = '💾 Guardar Cambios';
+            btn.disabled = false;
+
+            if (error) {
+                Utils.toast('Error: ' + error, 'error');
+                return;
+            }
+
+            business.slug = slug;
+            business.name = name;
+            document.getElementById('portal-url').textContent = `hoyenpunto.netlify.app/reservar/?slug=${slug}`;
+            document.getElementById('preview-name').textContent = name;
+            Utils.toast('✓ Marca actualizada', 'success');
+        }
+
+        function copyLink() {
+            const url = `https://hoyenpunto.netlify.app/reservar/?slug=${business.slug}`;
+            navigator.clipboard.writeText(url).then(() => {
+                Utils.toast('✓ Enlace copiado', 'success');
+            }).catch(() => {
+                prompt('Copia:', url);
+            });
+        }
+    </script>
+</body>
+</html>

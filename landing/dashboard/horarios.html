@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horarios — HoyEnPunto</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff8000; --primary-dark: #e67300; --primary-light: #ff9933;
+            --primary-50: rgba(255,128,0,0.08); --primary-glow: 0 0 20px rgba(255,128,0,0.4);
+            --forest-950: #05140b; --forest-900: #0a2616;
+            --surface: rgba(255,255,255,0.03); --surface-hover: rgba(255,255,255,0.06);
+            --surface-border: rgba(255,255,255,0.07); --glass-bg: rgba(255,255,255,0.025);
+            --glass-border: rgba(255,255,255,0.08); --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --text-primary: #fff; --text-secondary: rgba(255,255,255,0.75);
+            --text-muted: rgba(255,255,255,0.45); --text-dim: rgba(255,255,255,0.25);
+            --success: #10b981; --danger: #ef4444; --radius: 10px; --radius-lg: 14px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--forest-950); background-image: radial-gradient(ellipse at 80% 20%, rgba(255,128,0,0.04) 0%, transparent 40%); color: var(--text-primary); min-height: 100vh; padding: 24px; }
+        .container { max-width: 700px; margin: 0 auto; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .back-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--surface-border); background: var(--surface); color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: all 0.15s; }
+        .back-btn:hover { background: var(--surface-hover); border-color: var(--primary); color: var(--primary); }
+        .header h1 { font-size: 1.5rem; font-weight: 800; }
+        .btn-save { display: flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: 8px; background: var(--primary); color: var(--forest-950); border: none; font-size: 0.85rem; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: var(--primary-glow); transition: all 0.2s; }
+        .btn-save:hover { background: var(--primary-light); transform: translateY(-1px); }
+        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .schedule-card { background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); padding: 24px; margin-bottom: 16px; }
+        .schedule-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 16px; color: var(--text-secondary); }
+        .schedule-grid { display: flex; flex-direction: column; gap: 10px; }
+        .schedule-row { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--surface-border); transition: all 0.15s; }
+        .schedule-row.inactive { opacity: 0.4; }
+        .schedule-day { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); min-width: 90px; }
+        .schedule-toggle { position: relative; width: 42px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 100px; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+        .schedule-toggle.active { background: var(--primary); box-shadow: 0 0 10px rgba(255,128,0,0.3); }
+        .schedule-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: white; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        .schedule-toggle.active::after { transform: translateX(18px); }
+        .schedule-times { display: flex; align-items: center; gap: 8px; flex: 1; }
+        .time-input { padding: 8px 12px; border: 1px solid var(--surface-border); border-radius: 8px; font-size: 0.85rem; font-family: inherit; width: 100px; text-align: center; background: var(--surface); color: var(--text-primary); outline: none; transition: border-color 0.2s; }
+        .time-input:focus { border-color: var(--primary); }
+        .time-input:disabled { opacity: 0.3; cursor: not-allowed; }
+        .schedule-separator { font-size: 0.85rem; color: var(--text-dim); }
+        .info-box { background: rgba(255,128,0,0.05); border: 1px solid rgba(255,128,0,0.15); border-radius: var(--radius); padding: 14px 18px; margin-top: 20px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+        .info-box strong { color: var(--primary-light); }
+        .success-msg { display: none; align-items: center; gap: 8px; padding: 12px 18px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); border-radius: var(--radius); color: #34d399; font-size: 0.85rem; font-weight: 600; margin-bottom: 16px; }
+        .success-msg.show { display: flex; }
+        @media (max-width: 600px) { .header { flex-direction: column; align-items: flex-start; gap: 12px; } .schedule-row { flex-wrap: wrap; } .schedule-times { width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <a href="/dashboard/" class="back-btn">← Volver</a>
+                <h1>🕒 Horarios de Atención</h1>
+            </div>
+            <button class="btn-save" id="btn-save" onclick="saveSchedules()">💾 Guardar Cambios</button>
+        </div>
+
+        <div class="success-msg" id="success-msg">✅ Horarios guardados correctamente</div>
+
+        <div class="schedule-card">
+            <h3>Define los días y horas en que tu negocio atiende</h3>
+            <div class="schedule-grid" id="schedule-grid">
+                <div style="padding: 20px; text-align: center; color: var(--text-muted);">⏳ Cargando horarios...</div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>💡 Tip:</strong> Los clientes solo podrán reservar en los días y horas que configures aquí. 
+            Si desactivas un día, no aparecerá como disponible en tu portal de reservas.
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/db.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <script>
+        let business = null;
+        const DAYS = [
+            { key: 'monday', name: 'Lunes' },
+            { key: 'tuesday', name: 'Martes' },
+            { key: 'wednesday', name: 'Miércoles' },
+            { key: 'thursday', name: 'Jueves' },
+            { key: 'friday', name: 'Viernes' },
+            { key: 'saturday', name: 'Sábado' },
+            { key: 'sunday', name: 'Domingo' }
+        ];
+
+        (async () => {
+            const user = await Auth.requireAuth('/login/');
+            if (!user) return;
+            const { data: biz } = await DB.businesses.getMine();
+            if (!biz) { window.location.href = '/registro/'; return; }
+            business = biz;
+            await loadSchedules();
+        })();
+
+        async function loadSchedules() {
+            const { data: schedules } = await DB.schedules.getByBusiness(business.id);
+            renderSchedules(schedules || []);
+        }
+
+        function renderSchedules(schedules) {
+            const container = document.getElementById('schedule-grid');
+            const scheduleMap = {};
+            schedules.forEach(s => { scheduleMap[s.day] = s; });
+
+            container.innerHTML = DAYS.map(day => {
+                const sched = scheduleMap[day.key];
+                const isActive = !!sched;
+                const startTime = sched ? sched.start_time.substring(0, 5) : '09:00';
+                const endTime = sched ? sched.end_time.substring(0, 5) : '19:00';
+
+                return `
+                    <div class="schedule-row ${!isActive ? 'inactive' : ''}" data-day="${day.key}">
+                        <span class="schedule-day">${day.name}</span>
+                        <div class="schedule-toggle ${isActive ? 'active' : ''}" onclick="toggleDay(this)"></div>
+                        <div class="schedule-times">
+                            <input type="time" class="time-input start-time" value="${startTime}" ${!isActive ? 'disabled' : ''}>
+                            <span class="schedule-separator">a</span>
+                            <input type="time" class="time-input end-time" value="${endTime}" ${!isActive ? 'disabled' : ''}>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleDay(toggle) {
+            toggle.classList.toggle('active');
+            const row = toggle.closest('.schedule-row');
+            const isActive = toggle.classList.contains('active');
+            row.classList.toggle('inactive', !isActive);
+            row.querySelectorAll('.time-input').forEach(input => {
+                input.disabled = !isActive;
+            });
+        }
+
+        async function saveSchedules() {
+            const btn = document.getElementById('btn-save');
+            btn.textContent = '⏳ Guardando...';
+            btn.disabled = true;
+
+            const rows = document.querySelectorAll('.schedule-row');
+            const scheduleData = [];
+
+            rows.forEach(row => {
+                const day = row.dataset.day;
+                const isActive = row.querySelector('.schedule-toggle').classList.contains('active');
+                const startTime = row.querySelector('.start-time').value + ':00';
+                const endTime = row.querySelector('.end-time').value + ':00';
+
+                scheduleData.push({ day, start_time: startTime, end_time: endTime, is_active: isActive });
+            });
+
+            const { error } = await DB.schedules.saveAll(business.id, scheduleData);
+
+            btn.textContent = '💾 Guardar Cambios';
+            btn.disabled = false;
+
+            if (error) {
+                Utils.toast('Error al guardar: ' + error, 'error');
+                return;
+            }
+
+            const msg = document.getElementById('success-msg');
+            msg.classList.add('show');
+            setTimeout(() => msg.classList.remove('show'), 3000);
+            Utils.toast('Horarios guardados ✓', 'success');
+        }
+    </script>
+</body>
+</html>
