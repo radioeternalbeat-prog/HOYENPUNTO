@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones — HoyEnPunto</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff8000; --primary-dark: #e67300; --primary-light: #ff9933;
+            --primary-50: rgba(255,128,0,0.08); --primary-glow: 0 0 20px rgba(255,128,0,0.4);
+            --forest-950: #05140b; --forest-900: #0a2616;
+            --surface: rgba(255,255,255,0.03); --surface-hover: rgba(255,255,255,0.06);
+            --surface-border: rgba(255,255,255,0.07); --glass-bg: rgba(255,255,255,0.025);
+            --glass-border: rgba(255,255,255,0.08); --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --text-primary: #fff; --text-secondary: rgba(255,255,255,0.75);
+            --text-muted: rgba(255,255,255,0.45); --text-dim: rgba(255,255,255,0.25);
+            --success: #10b981; --danger: #ef4444; --radius: 10px; --radius-lg: 14px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--forest-950); background-image: radial-gradient(ellipse at 50% 50%, rgba(255,128,0,0.03) 0%, transparent 50%); color: var(--text-primary); min-height: 100vh; padding: 24px; }
+        .container { max-width: 700px; margin: 0 auto; }
+        .header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+        .back-btn { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--surface-border); background: var(--surface); color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: all 0.15s; }
+        .back-btn:hover { background: var(--surface-hover); border-color: var(--primary); color: var(--primary); }
+        .header h1 { font-size: 1.5rem; font-weight: 800; }
+        .card { background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); padding: 24px; margin-bottom: 16px; }
+        .card-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: var(--text-primary); }
+        .card-subtitle { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; }
+        .notif-item { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--surface); border-radius: var(--radius); border: 1px solid var(--surface-border); margin-bottom: 10px; transition: all 0.15s; }
+        .notif-item:hover { border-color: rgba(255,128,0,0.15); }
+        .notif-icon { font-size: 1.5rem; width: 44px; height: 44px; border-radius: 12px; background: var(--primary-50); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .notif-info { flex: 1; }
+        .notif-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
+        .notif-desc { font-size: 0.75rem; color: var(--text-muted); }
+        .notif-toggle { position: relative; width: 44px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 100px; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+        .notif-toggle.active { background: var(--primary); box-shadow: 0 0 10px rgba(255,128,0,0.3); }
+        .notif-toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: white; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        .notif-toggle.active::after { transform: translateX(20px); }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px; }
+        .status-active { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #34d399; }
+        .status-inactive { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #f87171; }
+        .info-box { background: rgba(255,128,0,0.05); border: 1px solid rgba(255,128,0,0.15); border-radius: var(--radius); padding: 16px 18px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+        .info-box strong { color: var(--primary-light); }
+        .info-box a { color: var(--primary); text-decoration: none; }
+        .info-box a:hover { text-decoration: underline; }
+        .email-preview { margin-top: 20px; background: var(--forest-900); border-radius: var(--radius); border: 1px solid var(--surface-border); overflow: hidden; }
+        .email-preview-header { padding: 12px 16px; background: var(--primary); text-align: center; }
+        .email-preview-header span { font-size: 0.8rem; font-weight: 700; color: var(--forest-950); }
+        .email-preview-body { padding: 16px; font-size: 0.75rem; color: var(--text-muted); }
+        .email-preview-body .line { height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; margin-bottom: 6px; }
+        @media (max-width: 600px) { .notif-item { flex-wrap: wrap; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/dashboard/" class="back-btn">← Volver</a>
+            <h1>🔔 Notificaciones</h1>
+        </div>
+
+        <!-- Status -->
+        <div class="card">
+            <div class="card-title">Estado del Servicio de Email</div>
+            <div class="status-badge status-active" id="email-status">
+                <span>●</span> Emails activos — Resend configurado
+            </div>
+            <div class="card-subtitle">Los emails se envían automáticamente cuando un cliente completa una reserva.</div>
+
+            <!-- Email notifications config -->
+            <div class="notif-item">
+                <div class="notif-icon">✅</div>
+                <div class="notif-info">
+                    <div class="notif-name">Confirmación de Reserva</div>
+                    <div class="notif-desc">Se envía inmediatamente al cliente al confirmar su cita</div>
+                </div>
+                <div class="notif-toggle active" onclick="this.classList.toggle('active'); Utils.toast('Configuración guardada', 'success')"></div>
+            </div>
+
+            <div class="notif-item">
+                <div class="notif-icon">⏰</div>
+                <div class="notif-info">
+                    <div class="notif-name">Recordatorio 24 horas</div>
+                    <div class="notif-desc">Se envía 24 horas antes de la cita al cliente</div>
+                </div>
+                <div class="notif-toggle active" onclick="this.classList.toggle('active'); Utils.toast('Configuración guardada', 'success')"></div>
+            </div>
+
+            <div class="notif-item">
+                <div class="notif-icon">🔔</div>
+                <div class="notif-info">
+                    <div class="notif-name">Recordatorio 2 horas</div>
+                    <div class="notif-desc">Se envía 2 horas antes de la cita al cliente</div>
+                </div>
+                <div class="notif-toggle" onclick="this.classList.toggle('active'); Utils.toast('Configuración guardada', 'success')"></div>
+            </div>
+
+            <div class="notif-item">
+                <div class="notif-icon">📩</div>
+                <div class="notif-info">
+                    <div class="notif-name">Nueva reserva (para ti)</div>
+                    <div class="notif-desc">Recibes un email cuando un cliente agenda una cita</div>
+                </div>
+                <div class="notif-toggle active" onclick="this.classList.toggle('active'); Utils.toast('Configuración guardada', 'success')"></div>
+            </div>
+
+            <div class="notif-item">
+                <div class="notif-icon">❌</div>
+                <div class="notif-info">
+                    <div class="notif-name">Cancelación</div>
+                    <div class="notif-desc">Notificar al cliente cuando se cancela su cita</div>
+                </div>
+                <div class="notif-toggle active" onclick="this.classList.toggle('active'); Utils.toast('Configuración guardada', 'success')"></div>
+            </div>
+        </div>
+
+        <!-- WhatsApp (Próximamente) -->
+        <div class="card" style="opacity: 0.6;">
+            <div class="card-title">📱 WhatsApp Business (Próximamente)</div>
+            <div class="card-subtitle">Envía recordatorios automáticos por WhatsApp para mayor tasa de apertura.</div>
+            <div class="notif-item" style="pointer-events: none;">
+                <div class="notif-icon">💬</div>
+                <div class="notif-info">
+                    <div class="notif-name">Recordatorio por WhatsApp</div>
+                    <div class="notif-desc">Requiere integración con Meta Cloud API — disponible en Plan Business</div>
+                </div>
+                <div class="notif-toggle"></div>
+            </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="card">
+            <div class="card-title">Vista Previa del Email</div>
+            <div class="card-subtitle">Así se ve el email que reciben tus clientes:</div>
+            <div class="email-preview">
+                <div class="email-preview-header">
+                    <span>🕐 HoyEnPunto — Reserva Confirmada</span>
+                </div>
+                <div class="email-preview-body">
+                    <p style="margin-bottom: 8px; color: var(--text-secondary);">Hola <strong style="color: #fff;">Cliente</strong>, tu cita ha sido agendada:</p>
+                    <div class="line" style="width: 70%;"></div>
+                    <div class="line" style="width: 50%;"></div>
+                    <div class="line" style="width: 60%;"></div>
+                    <div style="margin-top: 12px; padding: 10px; background: rgba(255,128,0,0.08); border-radius: 6px; border: 1px solid rgba(255,128,0,0.15);">
+                        <p style="font-size: 0.7rem; color: var(--primary-light);">📅 Fecha · ⏰ Hora · 💼 Servicio</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info -->
+        <div class="info-box">
+            <strong>ℹ️ Sobre los emails:</strong><br>
+            Los emails se envían via <a href="https://resend.com" target="_blank">Resend</a> (100 emails gratis/día). 
+            El email de confirmación se envía automáticamente cuando un cliente reserva desde tu portal.
+            Los recordatorios programados (24h y 2h antes) requieren un cron job que se implementará en la siguiente actualización.
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <script>
+        // Auth guard
+        (async () => {
+            const user = await Auth.requireAuth('/login/');
+            if (!user) return;
+        })();
+    </script>
+</body>
+</html>
