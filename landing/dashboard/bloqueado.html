@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Finalizada — HoyEnPunto</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff8000; --primary-dark: #e67300; --primary-light: #ff9933;
+            --primary-glow: 0 0 20px rgba(255,128,0,0.4);
+            --accent: #e1ff00; --accent-glow: 0 0 15px rgba(225,255,0,0.35);
+            --forest-950: #05140b; --forest-900: #0a2616;
+            --surface: rgba(255,255,255,0.03); --surface-hover: rgba(255,255,255,0.06);
+            --surface-border: rgba(255,255,255,0.07); --glass-bg: rgba(255,255,255,0.025);
+            --glass-border: rgba(255,255,255,0.1); --glass-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --text-primary: #fff; --text-secondary: rgba(255,255,255,0.75);
+            --text-muted: rgba(255,255,255,0.45); --text-dim: rgba(255,255,255,0.25);
+            --success: #10b981; --danger: #ef4444; --radius: 10px; --radius-xl: 24px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--forest-950); background-image: radial-gradient(ellipse at 50% 0%, rgba(255,128,0,0.08) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(225,255,0,0.04) 0%, transparent 50%); color: var(--text-primary); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+        .container { max-width: 520px; width: 100%; text-align: center; }
+        .logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.3rem; margin-bottom: 28px; text-decoration: none; }
+        .logo-text { background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .lock-card { background: var(--glass-bg); backdrop-filter: blur(20px); border-radius: var(--radius-xl); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); padding: 40px 36px; position: relative; overflow: hidden; }
+        .lock-card::before { content: ''; position: absolute; top: -80px; right: -80px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(255,128,0,0.12) 0%, transparent 70%); pointer-events: none; }
+        .lock-icon { font-size: 3rem; margin-bottom: 16px; }
+        .lock-card h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 10px; }
+        .lock-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 28px; }
+        .lock-card p strong { color: var(--text-secondary); }
+        /* Oferta */
+        .offer-box { background: rgba(255,128,0,0.06); border: 2px solid var(--accent); border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: var(--accent-glow); }
+        .offer-badge { display: inline-block; background: var(--accent); color: var(--forest-950); padding: 4px 14px; border-radius: 100px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; }
+        .offer-price { display: flex; align-items: baseline; justify-content: center; gap: 8px; margin-bottom: 4px; }
+        .price-old { font-size: 0.9rem; color: var(--text-dim); text-decoration: line-through; }
+        .price-main { font-size: 3rem; font-weight: 900; color: var(--primary); line-height: 1; }
+        .offer-note { font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 16px; }
+        .offer-features { list-style: none; text-align: left; }
+        .offer-features li { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 0.85rem; color: var(--text-secondary); }
+        .offer-features li::before { content: '✓'; color: var(--primary); font-weight: 700; }
+        .btn-pay { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 18px; border-radius: var(--radius); background: var(--primary); color: var(--forest-950); border: none; font-size: 1.05rem; font-weight: 800; cursor: pointer; font-family: inherit; box-shadow: var(--primary-glow); transition: all 0.2s; }
+        .btn-pay:hover { background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 0 35px rgba(255,128,0,0.5); }
+        .btn-pay:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .secondary-actions { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+        .link-secondary { color: var(--text-muted); font-size: 0.8rem; text-decoration: none; }
+        .link-secondary:hover { color: var(--primary); }
+        .data-safe { margin-top: 16px; font-size: 0.75rem; color: var(--text-dim); }
+        .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(5,20,11,0.3); border-top-color: var(--forest-950); border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="logo">
+            <span>🕐</span>
+            <span class="logo-text">HoyEnPunto</span>
+        </a>
+
+        <div class="lock-card">
+            <div class="lock-icon">🔒</div>
+            <h1>Tu prueba gratuita finalizó</h1>
+            <p>
+                Tu período de prueba de 7 días (más 3 días de gracia) ha terminado.
+                <strong>Tus datos, reservas y clientes están guardados y seguros.</strong>
+                Activa tu cuenta para seguir usando HoyEnPunto.
+            </p>
+
+            <div class="offer-box">
+                <div class="offer-badge">🔥 Oferta de Lanzamiento</div>
+                <div class="offer-price">
+                    <span class="price-old">$19/mes</span>
+                    <span class="price-main">$29</span>
+                </div>
+                <div class="offer-note">USD — Pago único. Úsalo para siempre.</div>
+                <ul class="offer-features">
+                    <li>Acceso de por vida (sin mensualidades)</li>
+                    <li>Reservas ilimitadas</li>
+                    <li>Recordatorios automáticos</li>
+                    <li>White-label + CRM + Analytics</li>
+                </ul>
+            </div>
+
+            <button class="btn-pay" id="btn-pay" onclick="startPayment()">
+                💳 Activar de por Vida — $29
+            </button>
+
+            <p class="data-safe">🔒 Pago seguro con MercadoPago · Tus datos están respaldados</p>
+
+            <div class="secondary-actions">
+                <a class="link-secondary" href="https://wa.me/56939010237" target="_blank">¿Dudas? Contáctanos por WhatsApp</a>
+                <a class="link-secondary" onclick="Auth.signOut()" style="cursor:pointer;">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase-config.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/db.js"></script>
+    <script src="/js/utils.js"></script>
+
+    <script>
+        let business = null;
+
+        (async () => {
+            const user = await Auth.requireAuth('/login/');
+            if (!user) return;
+            const { data: biz } = await DB.businesses.getMine();
+            if (!biz) { window.location.href = '/registro/'; return; }
+            business = biz;
+
+            // Si en realidad SÍ tiene acceso (perpetua/trial válido), redirigir al dashboard
+            const access = Access.evaluate(biz);
+            if (access.allowed) {
+                window.location.href = '/dashboard/';
+            }
+        })();
+
+        async function startPayment() {
+            const btn = document.getElementById('btn-pay');
+            btn.innerHTML = '<span class="spinner"></span> Redirigiendo...';
+            btn.disabled = true;
+
+            const user = await Auth.getUser();
+            try {
+                const resp = await fetch('/api/create-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ businessId: business.id, businessName: business.name, email: user.email })
+                });
+                const result = await resp.json();
+                if (result.init_point) {
+                    window.location.href = result.init_point;
+                } else {
+                    Utils.toast('Error: ' + (result.error || 'No se pudo crear el pago'), 'error');
+                    btn.innerHTML = '💳 Activar de por Vida — $29';
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                Utils.toast('Error de conexión. Intenta de nuevo.', 'error');
+                btn.innerHTML = '💳 Activar de por Vida — $29';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -908,6 +908,20 @@
 
             business = biz;
 
+            // ===== CONTROL DE ACCESO: si el negocio expiró, mostrar "no disponible" =====
+            const access = Access.evaluate(biz);
+            if (!access.allowed) {
+                document.querySelector('.booking-container').innerHTML = `
+                    <div style="padding: 60px 20px; text-align: center;">
+                        <p style="font-size: 2.5rem; margin-bottom: 12px;">⏸️</p>
+                        <h2 style="color: var(--text-primary); margin-bottom: 8px;">Reservas no disponibles</h2>
+                        <p style="color: var(--text-muted);">Este negocio no está aceptando reservas en línea por el momento.</p>
+                        <p style="color: var(--text-dim); font-size: 0.8rem; margin-top: 12px;">Por favor contacta directamente al negocio.</p>
+                    </div>
+                `;
+                return;
+            }
+
             // Apply business branding
             applyBranding(biz);
 

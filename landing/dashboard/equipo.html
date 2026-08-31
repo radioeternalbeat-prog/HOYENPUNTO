@@ -120,6 +120,7 @@
             const { data: biz } = await DB.businesses.getMine();
             if (!biz) { window.location.href = '/registro/'; return; }
             business = biz;
+            if (!Access.requireAccess(biz)) return;
             await loadStaff();
         })();
 

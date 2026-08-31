@@ -1118,8 +1118,16 @@
             document.getElementById('sidebar-user-plan').textContent = statusLabels[biz.subscription_status] || `Plan ${biz.plan}`;
             document.getElementById('link-box-url').textContent = `hoyenpunto.netlify.app/reservar/?slug=${biz.slug}`;
 
-            // Mostrar banner de upgrade si está en trial
-            handleSubscriptionBanner(biz);
+            // ===== CONTROL DE ACCESO (trial / gracia / bloqueo) =====
+            const access = Access.evaluate(biz);
+            if (!access.allowed) {
+                // Trial + gracia expirados → redirigir a pantalla de bloqueo
+                window.location.href = '/dashboard/bloqueado.html';
+                return;
+            }
+
+            // Mostrar banner de upgrade si está en trial o gracia
+            handleSubscriptionBanner(biz, access);
 
             // Manejar retorno de pago exitoso
             const params = new URLSearchParams(window.location.search);
@@ -1147,22 +1155,25 @@
         })();
 
         // ===== SUBSCRIPTION BANNER =====
-        function handleSubscriptionBanner(biz) {
+        function handleSubscriptionBanner(biz, access) {
             const banner = document.getElementById('trial-banner');
             if (!banner) return;
 
-            if (biz.subscription_status === 'trial') {
-                let daysLeft = 7;
-                if (biz.trial_ends_at) {
-                    const end = new Date(biz.trial_ends_at);
-                    daysLeft = Math.max(0, Math.ceil((end - new Date()) / (1000 * 60 * 60 * 24)));
-                }
-                document.getElementById('trial-days').textContent = daysLeft;
+            const textEl = document.getElementById('trial-text');
+
+            if (access.state === 'trial') {
+                // Trial normal (dentro de los 7 días)
+                document.getElementById('trial-days').textContent = access.daysLeft;
+                textEl.innerHTML = `Te quedan <strong id="trial-days" style="color:var(--primary-light);">${access.daysLeft}</strong> días de prueba gratis. Asegura tu cupo: <strong style="color:var(--accent);">Professional Perpetua por $29 pago único</strong> (solo 50 cupos).`;
                 banner.style.display = 'flex';
-                if (daysLeft === 0) {
-                    document.getElementById('trial-text').innerHTML = 'Tu prueba gratis <strong>terminó</strong>. Activa Professional Perpetua por $29 pago único.';
-                }
+            } else if (access.state === 'grace') {
+                // Período de gracia (trial expiró, quedan 3 días)
+                banner.style.background = 'linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(255,128,0,0.1) 100%)';
+                banner.style.borderColor = 'rgba(239,68,68,0.4)';
+                textEl.innerHTML = `⚠️ <strong style="color:#f87171;">Tu prueba terminó.</strong> Te quedan <strong style="color:#f87171;">${access.daysLeft} días de gracia</strong> antes de que tu cuenta se bloquee. Actívala ahora por $29.`;
+                banner.style.display = 'flex';
             }
+            // Si es 'active' (perpetua/pagando) → no mostrar banner
         }
 
         // ===== CALENDAR NAVIGATION =====

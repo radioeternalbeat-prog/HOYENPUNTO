@@ -132,3 +132,94 @@ const Auth = {
         });
     }
 };
+
+/**
+ * ============================================================
+ * ACCESS CONTROL — Evaluación de acceso según suscripción
+ * ============================================================
+ * Reglas:
+ *  - perpetual / active           → acceso total (nunca expira)
+ *  - trial y dentro de 7 días     → acceso con banner de trial
+ *  - trial y en período de gracia → acceso con banner urgente (3 días extra)
+ *  - trial y gracia expirada      → BLOQUEADO
+ *  - expired / cancelled          → BLOQUEADO
+ * ============================================================
+ */
+const GRACE_DAYS = 3; // Días de gracia después de que expira el trial
+
+const Access = {
+    /**
+     * Evalúa el acceso de un negocio.
+     * @returns {Object} {
+     *   allowed: boolean,        // ¿puede usar la plataforma?
+     *   state: string,           // 'active' | 'trial' | 'grace' | 'blocked'
+     *   daysLeft: number,        // días restantes (trial o gracia)
+     *   message: string
+     * }
+     */
+    evaluate(business) {
+        if (!business) {
+            return { allowed: false, state: 'blocked', daysLeft: 0, message: 'Sin negocio' };
+        }
+
+        const status = business.subscription_status;
+
+        // Perpetua o activa (pagando) → acceso total, nunca expira
+        if (status === 'perpetual' || status === 'active') {
+            return { allowed: true, state: 'active', daysLeft: null, message: 'Cuenta activa' };
+        }
+
+        // Cancelado o expirado explícitamente → bloqueado
+        if (status === 'cancelled' || status === 'expired') {
+            return { allowed: false, state: 'blocked', daysLeft: 0, message: 'Suscripción inactiva' };
+        }
+
+        // Trial → calcular días
+        if (status === 'trial') {
+            const now = new Date();
+            const trialEnd = business.trial_ends_at ? new Date(business.trial_ends_at) : null;
+
+            if (!trialEnd) {
+                // Sin fecha de trial → dar acceso por seguridad
+                return { allowed: true, state: 'trial', daysLeft: 7, message: 'Prueba activa' };
+            }
+
+            // Días hasta que termine el trial (puede ser negativo si ya pasó)
+            const msLeft = trialEnd - now;
+            const daysLeftTrial = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
+
+            if (daysLeftTrial > 0) {
+                // Dentro del trial
+                return { allowed: true, state: 'trial', daysLeft: daysLeftTrial, message: `Prueba: ${daysLeftTrial} días` };
+            }
+
+            // Trial expirado → verificar período de gracia
+            const graceEnd = new Date(trialEnd.getTime() + GRACE_DAYS * 24 * 60 * 60 * 1000);
+            const graceMsLeft = graceEnd - now;
+            const daysLeftGrace = Math.ceil(graceMsLeft / (1000 * 60 * 60 * 24));
+
+            if (daysLeftGrace > 0) {
+                // En período de gracia
+                return { allowed: true, state: 'grace', daysLeft: daysLeftGrace, message: `Gracia: ${daysLeftGrace} días` };
+            }
+
+            // Gracia expirada → bloqueado
+            return { allowed: false, state: 'blocked', daysLeft: 0, message: 'Prueba y gracia expiradas' };
+        }
+
+        // Default: permitir (fallback seguro)
+        return { allowed: true, state: 'trial', daysLeft: 0, message: 'Estado desconocido' };
+    },
+
+    /**
+     * Requiere que el negocio tenga acceso. Si no, redirige a la pantalla de bloqueo.
+     * Usar en páginas protegidas del dashboard.
+     */
+    requireAccess(business, redirectTo = '/dashboard/bloqueado.html') {
+        const result = this.evaluate(business);
+        if (!result.allowed) {
+            window.location.href = redirectTo;
+        }
+        return result;
+    }
+};
