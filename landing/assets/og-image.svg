@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a2616"/>
+      <stop offset="100%" stop-color="#05140b"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="80%" cy="15%" r="50%">
+      <stop offset="0%" stop-color="#ff8000" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#ff8000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="15%" cy="90%" r="45%">
+      <stop offset="0%" stop-color="#e1ff00" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#e1ff00" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="txt" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff8000"/>
+      <stop offset="100%" stop-color="#e1ff00"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow1)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+
+  <!-- Reloj icon -->
+  <text x="600" y="230" font-family="Arial, sans-serif" font-size="90" text-anchor="middle">🕐</text>
+
+  <!-- Título -->
+  <text x="600" y="340" font-family="Arial, sans-serif" font-size="82" font-weight="800" text-anchor="middle" fill="url(#txt)">HoyEnPunto</text>
+
+  <!-- Subtítulo -->
+  <text x="600" y="410" font-family="Arial, sans-serif" font-size="34" font-weight="600" text-anchor="middle" fill="#ffffff">Reservas y citas online para tu negocio</text>
+
+  <!-- Tagline -->
+  <text x="600" y="465" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="rgba(255,255,255,0.6)">Digitaliza tu agenda · Reduce no-shows · Puntualidad absoluta</text>
+
+  <!-- Badge oferta -->
+  <rect x="420" y="510" width="360" height="56" rx="28" fill="#ff8000"/>
+  <text x="600" y="547" font-family="Arial, sans-serif" font-size="26" font-weight="800" text-anchor="middle" fill="#05140b">🔥 Oferta: $29 pago único</text>
+</svg>
