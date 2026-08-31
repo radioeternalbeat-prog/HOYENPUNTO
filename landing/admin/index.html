@@ -87,6 +87,18 @@
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
         .search-box { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 8px; border: 1px solid var(--surface-border); background: var(--surface); min-width: 240px; margin-bottom: 16px; }
         .search-box input { flex: 1; border: none; background: transparent; outline: none; color: var(--text-primary); font-size: 0.85rem; font-family: inherit; }
+        /* Filter tabs */
+        .filter-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .filter-tab { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--surface-border); background: var(--surface); color: var(--text-muted); font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+        .filter-tab:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-tab.active { background: var(--primary-50); border-color: var(--primary); color: var(--primary); }
+        .filter-tab span { background: rgba(255,255,255,0.08); padding: 1px 7px; border-radius: 100px; font-size: 0.7rem; }
+        .filter-tab.active span { background: rgba(255,128,0,0.2); }
+        /* Days indicator */
+        .biz-days { font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 100px; white-space: nowrap; }
+        .days-ok { background: rgba(16,185,129,0.1); color: #34d399; }
+        .days-warning { background: rgba(245,158,11,0.1); color: #fbbf24; }
+        .days-danger { background: rgba(239,68,68,0.1); color: #f87171; }
         @media (max-width: 700px) { .biz-stats { display: none; } .header { flex-direction: column; align-items: flex-start; } }
     </style>
 </head>
@@ -138,6 +150,15 @@
 
         <!-- Lista de negocios -->
         <div class="section-title">📋 Todas las Cuentas (<span id="biz-count">0</span>)</div>
+
+        <!-- Pestañas de filtro -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterByStatus('all', this)">Todas <span id="count-all">0</span></button>
+            <button class="filter-tab" onclick="filterByStatus('paid', this)">✅ Pagaron <span id="count-paid">0</span></button>
+            <button class="filter-tab" onclick="filterByStatus('pending', this)">🟠 Pendientes <span id="count-pending">0</span></button>
+            <button class="filter-tab" onclick="filterByStatus('expired', this)">🔴 Expirados <span id="count-expired">0</span></button>
+        </div>
+
         <div class="search-box">
             <span>🔍</span>
             <input type="text" id="search-input" placeholder="Buscar negocio por nombre, email o slug..." oninput="filterBusinesses(this.value)">
@@ -210,11 +231,67 @@
         }
 
         // ===== BUSINESSES =====
+        let currentStatusFilter = 'all';
+
         async function loadBusinesses() {
             const { data, error } = await DB.admin.getBusinessesOverview();
             if (error) { Utils.toast('Error: ' + error, 'error'); return; }
             allBusinesses = data;
-            renderBusinesses(allBusinesses);
+            updateFilterCounts();
+            renderBusinesses(getFilteredList());
+        }
+
+        // Clasificar cada negocio: paid / pending / expired
+        function classify(b) {
+            if (b.subscription_status === 'perpetual' || b.subscription_status === 'active') return 'paid';
+            if (b.subscription_status === 'cancelled' || b.subscription_status === 'expired') return 'expired';
+            // trial → verificar si expiró (trial + 3 días de gracia)
+            if (b.subscription_status === 'trial') {
+                if (!b.trial_ends_at) return 'pending';
+                const now = new Date();
+                const graceEnd = new Date(new Date(b.trial_ends_at).getTime() + 3 * 24 * 60 * 60 * 1000);
+                return graceEnd < now ? 'expired' : 'pending';
+            }
+            return 'pending';
+        }
+
+        // Días restantes de trial+gracia
+        function daysInfo(b) {
+            if (b.subscription_status === 'perpetual' || b.subscription_status === 'active') {
+                return { text: '∞ Pagado', cls: 'days-ok' };
+            }
+            if (!b.trial_ends_at) return { text: 'Trial', cls: 'days-warning' };
+            const now = new Date();
+            const trialEnd = new Date(b.trial_ends_at);
+            const graceEnd = new Date(trialEnd.getTime() + 3 * 24 * 60 * 60 * 1000);
+            const daysToGrace = Math.ceil((graceEnd - now) / (1000 * 60 * 60 * 24));
+            const daysToTrial = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));
+
+            if (daysToTrial > 0) return { text: `${daysToTrial}d prueba`, cls: 'days-ok' };
+            if (daysToGrace > 0) return { text: `${daysToGrace}d gracia`, cls: 'days-warning' };
+            return { text: 'Expirado', cls: 'days-danger' };
+        }
+
+        function updateFilterCounts() {
+            const counts = { all: allBusinesses.length, paid: 0, pending: 0, expired: 0 };
+            allBusinesses.forEach(b => { counts[classify(b)]++; });
+            document.getElementById('count-all').textContent = counts.all;
+            document.getElementById('count-paid').textContent = counts.paid;
+            document.getElementById('count-pending').textContent = counts.pending;
+            document.getElementById('count-expired').textContent = counts.expired;
+        }
+
+        function getFilteredList() {
+            if (currentStatusFilter === 'all') return allBusinesses;
+            return allBusinesses.filter(b => classify(b) === currentStatusFilter);
+        }
+
+        function filterByStatus(status, btn) {
+            currentStatusFilter = status;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('search-input').value = '';
+            renderBusinesses(getFilteredList());
         }
 
         function renderBusinesses(list) {
@@ -222,13 +299,14 @@
             const container = document.getElementById('business-list');
 
             if (list.length === 0) {
-                container.innerHTML = `<div class="empty-state"><p>No hay cuentas registradas aún.</p></div>`;
+                container.innerHTML = `<div class="empty-state"><p>No hay cuentas en este filtro.</p></div>`;
                 return;
             }
 
             container.innerHTML = list.map((b, i) => {
                 const color = COLORS[i % COLORS.length];
                 const statusLabels = { trial: 'Trial', active: 'Activo', perpetual: 'Perpetua', expired: 'Expirado', cancelled: 'Cancelado' };
+                const days = daysInfo(b);
                 return `
                     <div class="business-card" onclick='openDetail(${JSON.stringify(b).replace(/'/g, "&#39;")})'>
                         <div class="biz-avatar" style="background: ${color};">${b.name.charAt(0).toUpperCase()}</div>
@@ -240,6 +318,7 @@
                             <span><span class="biz-stat-num">${b.total_bookings}</span> reservas</span>
                             <span><span class="biz-stat-num">${b.total_customers}</span> clientes</span>
                         </div>
+                        <span class="biz-days ${days.cls}">${days.text}</span>
                         <span class="biz-status status-${b.subscription_status}">${statusLabels[b.subscription_status] || b.subscription_status}</span>
                     </div>
                 `;
@@ -248,7 +327,7 @@
 
         function filterBusinesses(query) {
             const q = query.toLowerCase();
-            const filtered = allBusinesses.filter(b =>
+            const filtered = getFilteredList().filter(b =>
                 b.name.toLowerCase().includes(q) ||
                 (b.owner_email || '').toLowerCase().includes(q) ||
                 b.slug.toLowerCase().includes(q)
