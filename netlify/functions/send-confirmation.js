@@ -45,11 +45,15 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
     }
 
-    // Get Resend API key from environment
+    // Get Resend configuration from environment
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'HoyEnPunto <onboarding@resend.dev>';
     if (!RESEND_API_KEY) {
         console.error('RESEND_API_KEY not configured');
-        return { statusCode: 500, body: JSON.stringify({ error: 'Email service not configured' }) };
+        return {
+            statusCode: 503,
+            body: JSON.stringify({ sent: false, error: 'Email service not configured' })
+        };
     }
 
     // Build email HTML
@@ -141,7 +145,7 @@ exports.handler = async (event) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                from: 'HoyEnPunto <onboarding@resend.dev>',
+                from: RESEND_FROM_EMAIL,
                 to: [customerEmail],
                 subject: `✅ Reserva confirmada — ${serviceName} en ${businessName}`,
                 html: emailHtml

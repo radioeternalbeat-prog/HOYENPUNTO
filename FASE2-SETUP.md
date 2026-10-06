@@ -73,6 +73,12 @@ Requiere las env vars (ya configuradas si hiciste el paso 1):
 - `RESEND_API_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
+La confirmación inmediata de cada reserva usa la misma `RESEND_API_KEY` mediante
+`/api/send-confirmation`. Para producción, configura también `RESEND_FROM_EMAIL`
+con un remitente de un dominio verificado en Resend, por ejemplo:
+`HoyEnPunto <reservas@tudominio.com>`. Si no se configura, se utiliza
+`HoyEnPunto <onboarding@resend.dev>`, que Resend limita normalmente a pruebas.
+
 ### 2.3 Verificar que funciona
 
 1. Netlify → **Functions** → busca `send-reminders`
@@ -114,6 +120,7 @@ Para que TODO funcione, en **Netlify → Environment variables** debes tener:
 | Variable | Para qué | Dónde obtenerla |
 |----------|----------|-----------------|
 | `RESEND_API_KEY` | Emails (confirmación + recordatorios) | resend.com |
+| `RESEND_FROM_EMAIL` | Remitente de confirmaciones y recordatorios | Dominio verificado en Resend |
 | `MERCADOPAGO_ACCESS_TOKEN` | Pagos | mercadopago.cl/developers |
 | `SUPABASE_SERVICE_ROLE_KEY` | Webhook + recordatorios (server-side) | Supabase → Settings → API |
 

@@ -1214,8 +1214,8 @@
             goToStep(5);
             Utils.toast('¡Reserva confirmada! 🎉', 'success');
 
-            // Send confirmation email (non-blocking)
-            sendConfirmationEmail({
+            // Send confirmation email. The booking remains valid even if the email provider fails.
+            const emailResult = await sendConfirmationEmail({
                 customerName: clientName,
                 customerEmail: clientEmail,
                 serviceName: selectedServices.map(s => s.name).join(', '),
@@ -1226,6 +1226,12 @@
                 businessAddress: business.address || '',
                 totalPrice: Utils.formatPrice(totalPrice)
             });
+
+            if (emailResult?.sent) {
+                Utils.toast('Te enviamos la confirmación a tu email.', 'success');
+            } else {
+                Utils.toast('Reserva creada, pero no pudimos enviar el email de confirmación.', 'error');
+            }
         }
 
         // ===== SEND CONFIRMATION EMAIL =====
@@ -1242,8 +1248,10 @@
                 } else {
                     console.log('[HoyEnPunto] ⚠️ Email no enviado:', result.error);
                 }
+                return { sent: result.sent === true, error: result.error || null };
             } catch(e) {
                 console.log('[HoyEnPunto] ⚠️ No se pudo enviar email:', e.message);
+                return { sent: false, error: e.message };
             }
         }
     </script>
