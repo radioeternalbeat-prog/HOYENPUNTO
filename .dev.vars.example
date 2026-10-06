@@ -1,0 +1,4 @@
+# Copia este archivo como .dev.vars y completa tus valores.
+# Nunca subas .dev.vars al repositorio.
+RESEND_API_KEY="reemplaza_con_tu_clave_de_resend"
+RESEND_FROM_EMAIL="HoyEnPunto <onboarding@resend.dev>"
